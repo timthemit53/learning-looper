@@ -1,8 +1,10 @@
-# CLAUDE.md — Comprehension Tracker
+# CLAUDE.md — Learning Looper
 
 ## Orientation
 
-Read `docs/design.md` first. It contains the full design plan — schema, triggers, measurement model, data architecture.
+Read `docs/closed-loop-method.md` first. It defines the five principles (Prior Art, Modular Decomposition with Interface Contracts, Demand-Driven Evaluation, Adaptive Control, Sample Rate Acceleration with Signal Fidelity) that govern how work is approached.
+
+Then read `docs/design.md`. It contains the full design plan — schema, triggers, measurement model, data architecture.
 
 For prior art research, see `docs/prior-art-comprehension-tracker.md`.
 
