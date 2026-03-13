@@ -1,0 +1,32 @@
+# Personal comprehension data (lives at ~/.comprehension/)
+data.json
+*.data.json
+
+# Environment / secrets
+.env
+.env.*
+*.key
+*.pem
+
+# API keys and credentials
+credentials.json
+secrets.json
+config.local.json
+
+# Claude session files
+.claude/projects/
+*.jsonl
+
+# OS files
+Thumbs.db
+Desktop.ini
+.DS_Store
+
+# Node (if we go that direction)
+node_modules/
+npm-debug.log*
+
+# Editor
+.vscode/
+*.swp
+*.swo
