@@ -6,7 +6,7 @@ Read `docs/closed-loop-method.md` first. It defines the five principles (Prior A
 
 Then read `docs/design.md`. It contains the full design plan — schema, triggers, measurement model, data architecture.
 
-For prior art research, see `docs/prior-art-comprehension-tracker.md`.
+For prior art research, see `docs/prior-art.md`.
 
 ## Reference: Origin Transcripts
 

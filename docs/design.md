@@ -114,7 +114,7 @@ Code production is not a separate assessment step. When used alongside real work
 ## Data Architecture
 
 - **Data file**: `~/.comprehension/data.json` — lives outside any repo, accessible from any project/session
-- **Code**: This repo (`comprehension-tracker`) — no personal data committed
+- **Code**: This repo (`learning-looper`) — no personal data committed
 - **Multi-user**: Designed in from the start, users as top-level entity
 
 ## Domains
@@ -127,7 +127,7 @@ Conversational. The system uses a consistent template for presenting concepts bu
 
 ## Prior Art
 
-See `docs/prior-art-comprehension-tracker.md` for full research. Key models informing this design:
+See `docs/prior-art.md` for full research. Key models informing this design:
 - **Duolingo HLR** — per-concept decay math
 - **FSRS** — state-of-the-art alternative decay model
 - **SOLO Taxonomy** — comprehension rubric
