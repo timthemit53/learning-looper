@@ -1,0 +1,134 @@
+{
+  "domain": "Game Mechanics & Engagement Research",
+  "purpose": "Inform Learning Looper quiz/interaction design",
+  "last_verified": "2026-03-16",
+  "sources": [
+    {
+      "title": "Why Simple Mechanics Make Addictive Games",
+      "url": "https://cardsrealm.com/en-us/articles/why-simple-mechanics-make-addictive-games-a-look-at-modern-casual-design",
+      "type": "industry"
+    },
+    {
+      "title": "Why Clicker Games Are So Popular",
+      "url": "https://blog.clickerheroes.com/why-clicker-games-are-so-popular-insights-from-clicker-heroes-and-top-titles/",
+      "type": "industry"
+    },
+    {
+      "title": "Spaced Repetition + Gamification for Retention",
+      "url": "https://elearningindustry.com/the-learning-retention-formula",
+      "type": "industry"
+    },
+    {
+      "title": "Game-Based Learning in Medical Education",
+      "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC10020233/",
+      "type": "peer-reviewed"
+    },
+    {
+      "title": "Psychology of Rewards in Modern Games",
+      "url": "https://mpr.unas.ac.id/the-psychology-of-rewards-in-modern-games/",
+      "type": "academic"
+    },
+    {
+      "title": "Engineered Highs: Reward Variability and Frequency as Potential Prerequisites of Behavioural Addiction",
+      "url": "https://www.sciencedirect.com/science/article/pii/S0306460323000217",
+      "type": "peer-reviewed"
+    },
+    {
+      "title": "Video Game Training and the Reward System",
+      "url": "https://www.frontiersin.org/journals/human-neuroscience/articles/10.3389/fnhum.2015.00040/full",
+      "type": "peer-reviewed"
+    },
+    {
+      "title": "Gamification in Medical Education: Retention and Engagement (Randomized Trial)",
+      "url": "https://www.researchgate.net/publication/395422293_Gamification_in_Medical_Education_Does_It_Improve_Retention_and_Engagement_A_Randomized_Trial",
+      "type": "peer-reviewed"
+    },
+    {
+      "title": "Using Spaced Repetition and Gamification to Enhance K-12 Student Science Literacy",
+      "url": "https://www.researchgate.net/publication/311313719_Using_spaced_repetition_and_gamification_to_enhance_K-12_student_science_literacy_with_on-demand_mobile_short_reads",
+      "type": "peer-reviewed"
+    }
+  ],
+  "mechanics": [
+    {
+      "name": "Instant Feedback",
+      "rank": 1,
+      "description": "Visual effects, sound cues, and number changes within milliseconds of player action",
+      "why": "Triggers immediate dopamine release in ventral striatum. Every action must produce a visible/audible reaction.",
+      "examples": ["Duolingo chime on correct answer", "Number pop animations", "Screen shake on wrong answer"],
+      "evidence_strength": "strong",
+      "learning_application": "Correct = satisfying animation + sound; wrong = shake + show correct answer immediately"
+    },
+    {
+      "name": "Variable Reward Schedules",
+      "rank": 2,
+      "description": "Unpredictable rewards given at non-fixed intervals or magnitudes",
+      "why": "Anticipation of a possible reward triggers more dopamine than a guaranteed reward (Skinner's operant conditioning). Variable reinforcement schedules are the most resistant to extinction.",
+      "examples": ["Streak bonuses", "Surprise double-XP rounds", "Random loot drops"],
+      "evidence_strength": "strong",
+      "learning_application": "Random bonus points, surprise streak multipliers, occasional 'bonus round' questions"
+    },
+    {
+      "name": "Visible Progression",
+      "rank": 3,
+      "description": "Progress bars, level indicators, unlockable tiers that show advancement toward a goal",
+      "why": "The 'goal gradient effect' — motivation increases as you approach a milestone. The next level always feels just out of reach.",
+      "examples": ["XP bars", "Level badges", "Mastery percentages", "Skill trees"],
+      "evidence_strength": "strong",
+      "learning_application": "Per-topic mastery meter tied to spaced repetition decay model. Visible comprehension score per airspace class."
+    },
+    {
+      "name": "Low Effort / High Reward Ratio",
+      "rank": 4,
+      "description": "Minimal cognitive or motor cost to perform an action, but disproportionately satisfying feedback",
+      "why": "Removes friction between intention and action. The lower the barrier to act, the higher the repetition rate.",
+      "examples": ["Tap-to-earn", "Match-3 swipe", "Drag-and-drop sorting"],
+      "evidence_strength": "strong",
+      "learning_application": "Tap-to-select or drag-to-match interactions, not free-text entry. Reduce input friction."
+    },
+    {
+      "name": "Time Pressure",
+      "rank": 5,
+      "description": "Countdown timers or speed-based scoring that create urgency",
+      "why": "Activates focus and flow state. Perceived scarcity of time increases perceived value of correct action.",
+      "examples": ["Timed quiz rounds", "Speed bonus multipliers", "Countdown to next question"],
+      "evidence_strength": "moderate",
+      "learning_application": "Optional timed mode for review sessions. Bonus points for fast correct answers."
+    },
+    {
+      "name": "Social Comparison",
+      "rank": 6,
+      "description": "Leaderboards, head-to-head competition, or shared progress visibility",
+      "why": "Competitiveness increases attention and engagement. Social presence raises stakes without adding content complexity.",
+      "examples": ["Leaderboards", "Vs-mode", "Shared streaks", "Kahoot-style live competition"],
+      "evidence_strength": "moderate",
+      "learning_application": "Compare mastery scores with study partners. Could enable parent-child or student-student competition."
+    },
+    {
+      "name": "Pattern Matching / Categorization",
+      "rank": 7,
+      "description": "Matching, sorting, or categorizing items into groups",
+      "why": "Taps into innate pattern recognition circuitry. Clear success/failure signal. Low cognitive overhead.",
+      "examples": ["Match-3 (Candy Crush)", "Card matching (Concentration)", "Category sorting"],
+      "evidence_strength": "moderate",
+      "learning_application": "Match airspace class to its attributes. Sort requirements into correct airspace bucket. Drag-drop categorization."
+    }
+  ],
+  "key_findings": {
+    "spaced_repetition_plus_gamification": "~300% better retention vs traditional learning; ~200% from spaced repetition alone (eLearning Industry analysis of 50,000+ users)",
+    "dopamine_and_games": "Video gaming associated with endogenous dopamine release in ventral striatum (Frontiers in Human Neuroscience)",
+    "variable_vs_fixed_rewards": "Variable reinforcement schedules produce more persistent engagement than fixed schedules (ScienceDirect, Skinner)",
+    "quiz_plus_challenge": "Studies combining assessment with conflict/challenge attributes showed increased use of learning material and improved outcomes (PMC systematic review)"
+  },
+  "design_implications": {
+    "for_learning_looper": [
+      "Use tap/drag-drop interactions, not free-text input — minimize friction",
+      "Every answer (right or wrong) must produce immediate visual + audio feedback",
+      "Add variable bonus mechanics: random streak multipliers, surprise bonus rounds",
+      "Show per-topic mastery meter tied to spaced repetition decay curve",
+      "Offer optional timed mode for advanced review",
+      "Support match-class-to-attribute and sort-into-category question formats",
+      "Consider social/competitive features for study partners"
+    ]
+  }
+}

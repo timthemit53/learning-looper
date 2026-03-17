@@ -1,0 +1,78 @@
+{
+  "description": "Regulation text pulled from eCFR API for fact validation",
+  "pulled_date": "2026-03-17",
+  "sections": {
+    "91.117": {
+      "cfr": "14 CFR \u00a791.117",
+      "official_title": "Aircraft speed",
+      "text": "(a) Unless otherwise authorized by the Administrator, no person may operate an aircraft below 10,000 feet MSL at an indicated airspeed of more than 250 knots (288 m.p.h.). (b) Unless otherwise authorized or required by ATC, no person may operate an aircraft",
+      "ecfr_url": "https://www.ecfr.gov/current/title-14/section-91.117"
+    },
+    "91.126": {
+      "cfr": "14 CFR \u00a791.126",
+      "official_title": "Operating on or in the vicinity of an airport in Class G airspace",
+      "text": "(a) General. Unless otherwise authorized or required, each person operating an aircraft on or in the vicinity of an airport in a Class G airspace area must comply with the requirements of this section. (b) Direction of turns. When approaching to land at an",
+      "ecfr_url": "https://www.ecfr.gov/current/title-14/section-91.126"
+    },
+    "91.127": {
+      "cfr": "14 CFR \u00a791.127",
+      "official_title": "Operating on or in the vicinity of an airport in Class E airspace",
+      "text": "(a) Unless otherwise required by part 93 of this chapter or unless otherwise authorized or required by the ATC facility having jurisdiction over the Class E airspace area, each person operating an aircraft on or in the vicinity of an airport in a Class E airspace",
+      "ecfr_url": "https://www.ecfr.gov/current/title-14/section-91.127"
+    },
+    "91.129": {
+      "cfr": "14 CFR \u00a791.129",
+      "official_title": "Operations in Class D airspace",
+      "text": "(a) General. Unless otherwise authorized or required by the ATC facility having jurisdiction over the Class D airspace area, each person operating an aircraft in Class D airspace must comply with the applicable provisions of this section. In addition, each",
+      "ecfr_url": "https://www.ecfr.gov/current/title-14/section-91.129"
+    },
+    "91.130": {
+      "cfr": "14 CFR \u00a791.130",
+      "official_title": "Operations in Class C airspace",
+      "text": "(a) General. Unless otherwise authorized by ATC, each aircraft operation in Class C airspace must be conducted in compliance with this section and \u00a7 91.129. For the purpose of this section, the primary airport is the airport for which the Class C airspace",
+      "ecfr_url": "https://www.ecfr.gov/current/title-14/section-91.130"
+    },
+    "91.131": {
+      "cfr": "14 CFR \u00a791.131",
+      "official_title": "Operations in Class B airspace",
+      "text": "(a) Operating rules. No person may operate an aircraft within a Class B airspace area except in compliance with \u00a7 91.129 and the following rules: (1) The operator must receive an ATC clearance from the ATC facility having jurisdiction for that area before",
+      "ecfr_url": "https://www.ecfr.gov/current/title-14/section-91.131"
+    },
+    "91.135": {
+      "cfr": "14 CFR \u00a791.135",
+      "official_title": "Operations in Class A airspace",
+      "text": "Except as provided in paragraph (d) of this section, each person operating an aircraft in Class A airspace must conduct that operation under instrument flight rules (IFR) and in compliance with the following: (a) Clearance. Operations may be conducted only",
+      "ecfr_url": "https://www.ecfr.gov/current/title-14/section-91.135"
+    },
+    "91.155": {
+      "cfr": "14 CFR \u00a791.155",
+      "official_title": "Basic VFR weather minimums",
+      "text": "in \u00a7 91.155(b) 1 statute mile Clear of clouds. Night, except as provided in \u00a7 91.155(b)\u2026of clouds Night, except as provided in \u00a7 91.155(b) 1 statute mile Clear of clouds. More",
+      "ecfr_url": "https://www.ecfr.gov/current/title-14/section-91.155"
+    },
+    "91.215": {
+      "cfr": "14 CFR \u00a791.215",
+      "official_title": "ATC transponder and altitude reporting equipment and use",
+      "text": "Link to an amendment published at 86 FR 4512, Jan. 15, 2021. (a) All airspace: U.S.-registered civil aircraft. For operations not conducted under part 121 or 135 of this chapter, ATC transponder equipment installed must meet the performance and environmental",
+      "ecfr_url": "https://www.ecfr.gov/current/title-14/section-91.215"
+    },
+    "91.225": {
+      "cfr": "14 CFR \u00a791.225",
+      "official_title": "Automatic Dependent Surveillance-Broadcast (ADS-B) Out equipment and use",
+      "text": "(a) After January 1, 2020, and unless otherwise authorized by ATC, no person may operate an aircraft in Class A airspace unless the aircraft has equipment installed that - (1) Meets the performance requirements in TSO-C166b, Extended Squitter Automatic Dependent",
+      "ecfr_url": "https://www.ecfr.gov/current/title-14/section-91.225"
+    },
+    "91.227": {
+      "cfr": "14 CFR \u00a791.227",
+      "official_title": "Automatic Dependent Surveillance-Broadcast (ADS-B) Out equipment performance requirements",
+      "text": "(a) Definitions. For the purposes of this section: ADS-B Out is a function of an aircraft's onboard avionics that periodically broadcasts the aircraft's state vector (3-dimensional position and 3-dimensional velocity) and other required information as described",
+      "ecfr_url": "https://www.ecfr.gov/current/title-14/section-91.227"
+    },
+    "61.95": {
+      "cfr": "14 CFR \u00a761.95",
+      "official_title": "Operations in Class B airspace (student pilots)",
+      "text": "(a) A student pilot may not operate an aircraft on a solo flight in Class B airspace unless: (1) The student pilot has received both ground and flight training from an authorized instructor on that Class B airspace area, and the flight training was received",
+      "ecfr_url": "https://www.ecfr.gov/current/title-14/section-61.95"
+    }
+  }
+}

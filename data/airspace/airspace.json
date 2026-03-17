@@ -1,0 +1,165 @@
+{
+  "domain": "FAA Airspace Classification",
+  "source": "FAA AIM Chapter 3, 14 CFR Part 91, AOPA",
+  "last_verified": "2026-03-16",
+  "classes": [
+    {
+      "class": "A",
+      "altitude": "18,000' MSL (FL180) to FL600",
+      "location": "Entire US domestic airspace at and above 18,000' MSL",
+      "flight_rules": "IFR only",
+      "entry_requirement": "ATC clearance with IFR flight plan",
+      "communication": "Two-way radio required",
+      "transponder": "Mode C with altitude reporting",
+      "ads_b": "Required (1090ES only, TSO-C166b or TSO-C166c)",
+      "vfr_allowed": false,
+      "vfr_visibility": null,
+      "vfr_cloud_clearance": null,
+      "speed_limit": "No class-specific speed limit (aircraft Vmo/Mmo and ATC assignments still apply)",
+      "chart_depiction": {
+        "color": null,
+        "line_type": null,
+        "description": "Not depicted on sectional charts (Class A is defined by altitude, not geographic boundary)"
+      },
+      "notes": "No VFR operations permitted. Covers en route high-altitude environment."
+    },
+    {
+      "class": "B",
+      "altitude": "Surface to individually specified ceiling (typically ~10,000' MSL)",
+      "location": "Surrounds the busiest US airports (e.g., LAX, ORD, ATL)",
+      "flight_rules": "IFR and VFR",
+      "entry_requirement": "ATC clearance required before entry",
+      "communication": "Two-way radio required",
+      "transponder": "Mode C with altitude reporting",
+      "ads_b": "Required (1090ES or UAT) within Class B, above the ceiling within lateral boundaries up to 10,000' MSL, and within 30 NM Mode C veil (surface to 10,000' MSL)",
+      "vfr_allowed": true,
+      "vfr_visibility": "3 SM",
+      "vfr_cloud_clearance": "Clear of clouds",
+      "speed_limit": "250 KIAS below 10,000' MSL (14 CFR 91.117(b) 200 KIAS near-airport rule does NOT apply inside Class B; 14 CFR 91.117(c) 200 KIAS applies to airspace underlying Class B and VFR corridors through Class B)",
+      "chart_depiction": {
+        "color": "Blue",
+        "line_type": "Solid",
+        "shape": "Concentric rings (upside-down wedding cake profile)",
+        "description": "Solid blue lines with MSL altitude labels for each segment"
+      },
+      "notes": "Student pilots require specific ground/flight training and logbook endorsement for each specific Class B area — each area requires its own endorsement (14 CFR 61.95)."
+    },
+    {
+      "class": "C",
+      "altitude": "Surface to typically 4,000' AGL (individually specified)",
+      "location": "Surrounds mid-size towered airports with radar approach control",
+      "flight_rules": "IFR and VFR",
+      "entry_requirement": "Two-way radio contact established with ATC (not clearance — acknowledgment of callsign)",
+      "communication": "Two-way radio required",
+      "transponder": "Mode C with altitude reporting",
+      "ads_b": "Required (1090ES or UAT) within Class C and above the ceiling within lateral boundaries up to 10,000' MSL",
+      "vfr_allowed": true,
+      "vfr_visibility": "3 SM",
+      "vfr_cloud_clearance": "500' below, 1,000' above, 2,000' horizontal",
+      "speed_limit": "200 KIAS at or below 2,500' AGL within 4 NM of primary airport",
+      "chart_depiction": {
+        "color": "Magenta",
+        "line_type": "Solid",
+        "shape": "Two concentric rings (inner 5 NM surface-up, outer 10 NM shelf)",
+        "description": "Solid magenta lines with MSL altitude labels"
+      },
+      "notes": "Two rings: inner 5 NM surface-up, outer 10 NM shelf. '[Your callsign] standby' from ATC counts as established communication; a bare 'standby' without your callsign does NOT."
+    },
+    {
+      "class": "D",
+      "altitude": "Surface to typically 2,500' AGL (individually specified)",
+      "location": "Surrounds smaller towered airports",
+      "flight_rules": "IFR and VFR",
+      "entry_requirement": "Two-way radio contact established with ATC",
+      "communication": "Two-way radio required",
+      "transponder": "Not required by class (required if within Mode C veil of overlying Class B)",
+      "ads_b": "Not required by class (required if within ADS-B rule airspace)",
+      "vfr_allowed": true,
+      "vfr_visibility": "3 SM",
+      "vfr_cloud_clearance": "500' below, 1,000' above, 2,000' horizontal",
+      "speed_limit": "200 KIAS at or below 2,500' AGL within 4 NM of primary airport",
+      "chart_depiction": {
+        "color": "Blue",
+        "line_type": "Dashed (segmented)",
+        "shape": "Single circle around airport",
+        "description": "Dashed blue lines around the airport symbol"
+      },
+      "notes": "Reverts to Class E or G when tower is closed — check Chart Supplement for the specific airport to determine which."
+    },
+    {
+      "class": "E",
+      "altitude": "Varies — commonly 700' AGL, 1,200' AGL, or surface; up to but not including 18,000' MSL",
+      "location": "Controlled airspace not classified as A, B, C, or D",
+      "flight_rules": "IFR and VFR",
+      "entry_requirement": "None for VFR (meet weather minimums)",
+      "communication": "Not required for VFR",
+      "transponder": "Required above 10,000' MSL (excluding at/below 2,500' AGL) and within 30 NM of Class B primary airport (Mode C veil)",
+      "ads_b": "Required at and above 10,000' MSL in contiguous 48 states (excluding at/below 2,500' AGL); within Class B Mode C veil",
+      "vfr_allowed": true,
+      "vfr_visibility_below_10000": "3 SM",
+      "vfr_cloud_clearance_below_10000": "500' below, 1,000' above, 2,000' horizontal",
+      "vfr_visibility_at_above_10000": "5 SM",
+      "vfr_cloud_clearance_at_above_10000": "1,000' below, 1,000' above, 1 SM horizontal",
+      "speed_limit": "250 KIAS below 10,000' MSL",
+      "chart_depiction": {
+        "color": "Magenta",
+        "line_type": "Faded/shaded (vignette) or dashed magenta",
+        "shape": "Varies — shaded magenta vignette for 700' floors, dashed magenta for surface-based Class E",
+        "description": "Magenta vignette (fading shading) indicates 700' AGL floor; dashed magenta line indicates surface-based Class E; blue (cyan) vignette for explicitly charted 1,200' AGL floor; no depiction where 1,200' AGL is the default"
+      },
+      "notes": "Most common airspace in the US. IFR traffic separated by ATC; VFR traffic gets services only workload permitting."
+    },
+    {
+      "class": "G",
+      "altitude": "Surface up to the base of overlying Class E (typically 700' or 1,200' AGL)",
+      "location": "Uncontrolled airspace, mostly rural/remote areas at low altitude",
+      "flight_rules": "IFR and VFR (no ATC services)",
+      "entry_requirement": "None",
+      "communication": "Not required",
+      "transponder": "Not required (unless within Mode C veil or above 10,000' MSL)",
+      "ads_b": "Not required (unless within ADS-B rule airspace)",
+      "vfr_allowed": true,
+      "vfr_day_below_1200_agl": {
+        "visibility": "1 SM",
+        "cloud_clearance": "Clear of clouds"
+      },
+      "vfr_night_below_1200_agl": {
+        "visibility": "3 SM",
+        "cloud_clearance": "500' below, 1,000' above, 2,000' horizontal"
+      },
+      "vfr_day_above_1200_agl_below_10000": {
+        "visibility": "1 SM",
+        "cloud_clearance": "500' below, 1,000' above, 2,000' horizontal"
+      },
+      "vfr_night_above_1200_agl_below_10000": {
+        "visibility": "3 SM",
+        "cloud_clearance": "500' below, 1,000' above, 2,000' horizontal"
+      },
+      "vfr_above_10000": {
+        "visibility": "5 SM",
+        "cloud_clearance": "1,000' below, 1,000' above, 1 SM horizontal"
+      },
+      "speed_limit": "250 KIAS below 10,000' MSL (14 CFR 91.117 applies everywhere)",
+      "chart_depiction": {
+        "color": null,
+        "line_type": null,
+        "description": "Not directly depicted — Class G is the absence of depicted controlled airspace. Exists below the floor of Class E."
+      },
+      "notes": "Uncontrolled — no ATC authority. Pilot is solely responsible for see-and-avoid. Most lenient weather minimums during daytime below 1,200' AGL."
+    }
+  ],
+  "glossary": {
+    "MSL": "Mean Sea Level — altitude measured from sea level datum",
+    "AGL": "Above Ground Level — altitude measured from terrain surface",
+    "FL": "Flight Level — pressure altitude in hundreds of feet (e.g., FL180 = 18,000')",
+    "SM": "Statute Mile(s)",
+    "NM": "Nautical Mile(s)",
+    "KIAS": "Knots Indicated Airspeed",
+    "Mode_C": "Transponder mode that reports aircraft altitude to ATC via secondary radar",
+    "ADS_B_Out": "Automatic Dependent Surveillance-Broadcast — GPS-based position/altitude broadcast, required since Jan 1 2020 in most transponder-required airspace",
+    "1090ES": "1090 MHz Extended Squitter — ADS-B transmit frequency, required in Class A, usable in all classes",
+    "UAT": "Universal Access Transceiver — 978 MHz ADS-B option, usable below 18,000' MSL only",
+    "Mode_C_Veil": "The 30 NM ring around a Class B primary airport where Mode C transponder and ADS-B Out are required regardless of airspace class (surface to 10,000' MSL)",
+    "SVFR": "Special VFR — ATC authorization to operate VFR in controlled airspace below basic VFR weather minimums (visibility >= 1 SM, clear of clouds)"
+  }
+}

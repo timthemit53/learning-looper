@@ -1,0 +1,128 @@
+{
+  "domain": "Progressive Difficulty & Scaffolding in Game-Based Learning",
+  "purpose": "Inform Learning Looper level progression design",
+  "last_verified": "2026-03-16",
+  "sources": [
+    {
+      "title": "Effects of Adaptive Scaffolding on Performance, Cognitive Load and Engagement in Game-Based Learning (Randomized Controlled Trial)",
+      "url": "https://link.springer.com/article/10.1186/s12909-024-05698-3",
+      "type": "peer-reviewed"
+    },
+    {
+      "title": "Interactive Effects of Scaffolding Digital Game-Based Learning and Cognitive Style on Adult Learners",
+      "url": "https://educationaltechnologyjournal.springeropen.com/articles/10.1186/s41239-023-00385-7",
+      "type": "peer-reviewed"
+    },
+    {
+      "title": "A Review of Scaffolding Approaches in Game-based Learning Environments",
+      "url": "https://www.researchgate.net/publication/259564364_A_Review_of_Scaffolding_Approaches_in_Game-based_Learning_Environments",
+      "type": "peer-reviewed"
+    },
+    {
+      "title": "Zone of Proximal Development in Game Design",
+      "url": "https://www.gamerslearn.com/design/challenge-and-zpd-in-video-games",
+      "type": "industry"
+    },
+    {
+      "title": "Pathways to Mastery: A Taxonomy of Player Progression Systems in Commercial Video Games",
+      "url": "https://www.intechopen.com/chapters/1221745",
+      "type": "peer-reviewed"
+    },
+    {
+      "title": "Foundations of Game-Based Learning (Plass, NYU)",
+      "url": "https://files.eric.ed.gov/fulltext/EJ1090277.pdf",
+      "type": "peer-reviewed"
+    }
+  ],
+  "key_theories": {
+    "cognitive_load_theory": {
+      "description": "Working memory has limited capacity. When cognitive load exceeds capacity, learning is hindered (cognitive overload). Well-designed progression reduces extraneous load by sequencing content.",
+      "implication": "Introduce one class and one fact at a time. Never present all 6 classes × 15 attributes simultaneously."
+    },
+    "zone_of_proximal_development": {
+      "description": "Vygotsky's ZPD: the gap between what a learner can do independently and what they can achieve with support. Optimal learning happens at the edge of current ability.",
+      "evidence": "Meta-analysis (Van de Pol et al., 2010): contingent scaffolding adjusted to learner's ZPD is 2.5x more effective than fixed support.",
+      "implication": "Difficulty must adapt to demonstrated mastery. If learner is getting 90%+, advance. If below 60%, hold or simplify."
+    },
+    "mastery_based_gating": {
+      "description": "Progressive game levels that require demonstrated competence before unlocking new content. The progression system itself acts as scaffolding.",
+      "evidence": "Studies show mastery-gated progression increases use of learning material and improves outcomes vs. open-access designs.",
+      "implication": "Require ~80% accuracy on current level before unlocking next. Never skip ahead."
+    },
+    "adaptive_scaffolding": {
+      "description": "Dynamically adjusting difficulty based on real-time performance. Decreases extraneous load when learner is overloaded; increases germane load when underloaded.",
+      "evidence": "Adaptive scaffolding improved speed, reduced need for self-regulation, and lowered perceived cognitive load vs. fixed scaffolding.",
+      "implication": "Track per-question accuracy in real-time. If streak breaks, reduce difficulty. If streak builds, advance."
+    }
+  },
+  "progression_model": {
+    "description": "Proposed level structure for airspace quiz game based on research",
+    "mastery_threshold": 0.8,
+    "levels": [
+      {
+        "level": 1,
+        "title": "Class B Basics",
+        "classes_active": ["B"],
+        "facts_active": ["entry_requirement"],
+        "question_format": "binary_choice",
+        "description": "Learn one fact about one class. Binary choice: 'Class B entry requires ___ (clearance / radio contact)?'"
+      },
+      {
+        "level": 2,
+        "title": "Class B Expanded",
+        "classes_active": ["B"],
+        "facts_active": ["entry_requirement", "vfr_cloud_clearance", "chart_depiction"],
+        "question_format": "multiple_choice",
+        "description": "Add more facts about Class B. Multiple choice from 3-4 options."
+      },
+      {
+        "level": 3,
+        "title": "B vs C",
+        "classes_active": ["B", "C"],
+        "facts_active": ["entry_requirement", "vfr_cloud_clearance", "chart_depiction"],
+        "question_format": "tap_match",
+        "description": "Introduce Class C. Compare and contrast with B. 'Which class uses magenta lines?'"
+      },
+      {
+        "level": 4,
+        "title": "Adding Class D",
+        "classes_active": ["B", "C", "D"],
+        "facts_active": ["entry_requirement", "vfr_cloud_clearance", "chart_depiction", "transponder"],
+        "question_format": "tap_match",
+        "description": "Add Class D. Introduce transponder requirements. Compare D's dashed blue vs B's solid blue."
+      },
+      {
+        "level": 5,
+        "title": "Controlled Airspace",
+        "classes_active": ["A", "B", "C", "D"],
+        "facts_active": ["entry_requirement", "vfr_cloud_clearance", "chart_depiction", "transponder", "flight_rules", "communication"],
+        "question_format": "category_sort",
+        "description": "All controlled classes. Sort attributes into correct class buckets."
+      },
+      {
+        "level": 6,
+        "title": "E and G",
+        "classes_active": ["E", "G"],
+        "facts_active": ["entry_requirement", "communication", "transponder", "chart_depiction", "vfr_visibility"],
+        "question_format": "tap_match",
+        "description": "Introduce uncontrolled and the 'everything else' class. Focus on what's NOT required."
+      },
+      {
+        "level": 7,
+        "title": "Full Picture",
+        "classes_active": ["A", "B", "C", "D", "E", "G"],
+        "facts_active": "all",
+        "question_format": "mixed",
+        "description": "All classes, all attributes. Mixed question formats. Timed optional."
+      },
+      {
+        "level": 8,
+        "title": "Boss Round",
+        "classes_active": ["A", "B", "C", "D", "E", "G"],
+        "facts_active": "all",
+        "question_format": "timed_rapid_fire",
+        "description": "Speed round. All content. Streak multipliers. Variable bonuses."
+      }
+    ]
+  }
+}

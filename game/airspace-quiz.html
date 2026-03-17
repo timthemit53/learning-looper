@@ -1,0 +1,2068 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Airspace Quiz — Learning Looper</title>
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --class-a: #666666;
+    --class-b: #0055BF;
+    --class-c: #C2185B;
+    --class-d: #1976D2;
+    --class-e: #AD1457;
+    --class-g: #9E9E9E;
+    --bg: #0a0e1a;
+    --card: #141b2d;
+    --text: #e0e0e0;
+    --accent: #64ffda;
+  }
+
+  body {
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px 20px 60px 20px;
+  }
+
+  h1 {
+    font-size: 1.6rem;
+    margin-bottom: 4px;
+    color: var(--accent);
+  }
+
+  .subtitle {
+    font-size: 0.85rem;
+    color: #888;
+    margin-bottom: 20px;
+  }
+
+  /* HUD */
+  .hud {
+    display: flex;
+    gap: 24px;
+    margin-bottom: 16px;
+    font-size: 0.9rem;
+  }
+  .hud-item { text-align: center; }
+  .hud-item .label { color: #888; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1px; }
+  .hud-item .value { font-size: 1.4rem; font-weight: bold; color: var(--accent); }
+  .hud-item .value.streak { color: #ff9800; }
+  .hud-item .value.bonus { color: #e040fb; }
+
+  /* Level info */
+  .level-banner {
+    background: var(--card);
+    border: 1px solid #2a3450;
+    border-radius: 12px;
+    padding: 16px 24px;
+    margin-bottom: 20px;
+    text-align: center;
+    width: 100%;
+    max-width: 600px;
+  }
+  .level-banner h2 { font-size: 1.1rem; color: var(--accent); margin-bottom: 4px; }
+  .level-banner .desc { font-size: 0.8rem; color: #888; }
+
+  /* Progress bar */
+  .progress-wrap {
+    width: 100%;
+    max-width: 600px;
+    margin-bottom: 20px;
+  }
+  .progress-bar-bg {
+    height: 8px;
+    background: #1e2740;
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  .progress-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent), #00bfa5);
+    border-radius: 4px;
+    transition: width 0.4s ease;
+  }
+  .progress-label {
+    font-size: 0.7rem;
+    color: #888;
+    margin-top: 4px;
+    text-align: right;
+  }
+
+  /* Question card */
+  .question-card {
+    background: var(--card);
+    border: 1px solid #2a3450;
+    border-radius: 16px;
+    padding: 28px 24px;
+    margin-bottom: 24px;
+    width: 100%;
+    max-width: 600px;
+    text-align: center;
+    min-height: 120px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+  .question-card .fact-label {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: #888;
+    margin-bottom: 8px;
+  }
+  .question-card .question-text {
+    font-size: 1.25rem;
+    font-weight: 600;
+    line-height: 1.4;
+  }
+
+  /* Answer buttons grid */
+  .answers {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 12px;
+    width: 100%;
+    max-width: 600px;
+    margin-bottom: 20px;
+  }
+
+  .answer-btn {
+    padding: 16px 12px;
+    border-radius: 12px;
+    font-size: 1.1rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: transform 0.1s, box-shadow 0.2s;
+    color: white;
+    text-shadow: 0 1px 3px rgba(0,0,0,0.5);
+    position: relative;
+    overflow: hidden;
+  }
+  .answer-btn:hover { transform: scale(1.04); }
+  .answer-btn:active { transform: scale(0.97); }
+  .answer-btn.selected-toggle {
+    outline: 3px solid var(--accent);
+    outline-offset: 2px;
+    transform: scale(1.04);
+  }
+
+  /* Submit button for multi-select */
+  .submit-btn {
+    background: var(--accent);
+    color: #0a0e1a;
+    border: none;
+    padding: 12px 32px;
+    border-radius: 10px;
+    font-size: 1rem;
+    font-weight: 700;
+    cursor: pointer;
+    margin-top: 8px;
+    transition: transform 0.1s;
+    width: 100%;
+    max-width: 600px;
+  }
+  .submit-btn:hover { transform: scale(1.03); }
+  .submit-btn:disabled { opacity: 0.4; cursor: default; transform: none; }
+
+  .answer-btn.class-A {
+    background: var(--class-a);
+    border: 3px solid #888;
+  }
+  .answer-btn.class-B {
+    background: var(--class-b);
+    border: 3px solid #3388dd;
+  }
+  .answer-btn.class-C {
+    background: var(--class-c);
+    border: 3px solid #e91e63;
+  }
+  .answer-btn.class-D {
+    background: var(--class-d);
+    border: 3px dashed #42a5f5;
+  }
+  .answer-btn.class-E {
+    background: linear-gradient(135deg, var(--class-e), #880E4F44);
+    border: 3px solid #AD145766;
+  }
+  .answer-btn.class-G {
+    background: #333;
+    border: 3px dotted #666;
+    color: #ccc;
+  }
+
+  .answer-btn .btn-label {
+    font-size: 0.6rem;
+    display: block;
+    opacity: 0.7;
+    margin-top: 2px;
+    font-weight: 400;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  /* Feedback overlay */
+  .feedback {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+    z-index: 100;
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+  .feedback.show { opacity: 1; }
+  .feedback-inner {
+    background: var(--card);
+    border-radius: 20px;
+    padding: 32px 40px;
+    text-align: center;
+    border: 2px solid #2a3450;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+  }
+  .feedback-inner.correct { border-color: var(--accent); }
+  .feedback-inner.wrong { border-color: #ff5252; }
+  .feedback-icon { font-size: 3rem; margin-bottom: 8px; }
+  .feedback-text { font-size: 1.1rem; }
+  .feedback-detail { font-size: 0.85rem; color: #888; margin-top: 8px; }
+  .feedback-bonus { color: #e040fb; font-weight: bold; font-size: 1.2rem; margin-top: 4px; }
+
+  /* Shake animation */
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    20% { transform: translateX(-8px); }
+    40% { transform: translateX(8px); }
+    60% { transform: translateX(-6px); }
+    80% { transform: translateX(6px); }
+  }
+  .shake { animation: shake 0.4s ease; }
+
+  /* Pulse animation */
+  @keyframes pulse-glow {
+    0% { box-shadow: 0 0 0 0 rgba(100, 255, 218, 0.5); }
+    70% { box-shadow: 0 0 0 15px rgba(100, 255, 218, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(100, 255, 218, 0); }
+  }
+  .pulse { animation: pulse-glow 0.6s ease; }
+
+  /* Level complete screen */
+  .level-complete {
+    display: none;
+    text-align: center;
+    padding: 40px;
+  }
+  .level-complete h2 { color: var(--accent); font-size: 1.8rem; margin-bottom: 8px; }
+  .level-complete .stats { color: #888; margin-bottom: 24px; font-size: 0.95rem; line-height: 1.8; }
+  .next-btn {
+    background: var(--accent);
+    color: #0a0e1a;
+    border: none;
+    padding: 14px 36px;
+    border-radius: 10px;
+    font-size: 1.1rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: transform 0.1s;
+  }
+  .next-btn:hover { transform: scale(1.05); }
+
+  /* Start screen */
+  .start-screen {
+    text-align: center;
+    padding: 40px 20px;
+    max-width: 500px;
+  }
+  .start-screen p { color: #888; margin-bottom: 20px; line-height: 1.6; }
+  .start-screen .legend {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-bottom: 24px;
+    text-align: left;
+  }
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.85rem;
+  }
+  .legend-swatch {
+    width: 28px;
+    height: 18px;
+    border-radius: 4px;
+    flex-shrink: 0;
+  }
+
+  /* Player HUD bar */
+  .player-bar {
+    display: none;
+    width: 100%;
+    max-width: 600px;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+    padding: 8px 16px;
+    background: var(--card);
+    border-radius: 10px;
+    border: 1px solid #2a3450;
+  }
+  .player-bar .player-info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .player-bar .player-name-label {
+    font-weight: 600;
+    font-size: 0.95rem;
+  }
+  .logout-btn {
+    background: transparent;
+    border: 1px solid #ff5252;
+    color: #ff5252;
+    padding: 6px 14px;
+    border-radius: 8px;
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  .logout-btn:hover { background: #ff525222; }
+
+  /* Avatar system */
+  .avatar {
+    width: 48px;
+    height: 48px;
+    position: relative;
+    display: inline-block;
+  }
+  .avatar-large {
+    width: 80px;
+    height: 80px;
+  }
+  .avatar svg { width: 100%; height: 100%; }
+
+  /* Avatar picker on start screen */
+  .avatar-picker {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-bottom: 16px;
+  }
+  .avatar-option {
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    border: 3px solid transparent;
+    cursor: pointer;
+    padding: 4px;
+    transition: border-color 0.2s, transform 0.1s;
+    background: var(--card);
+  }
+  .avatar-option:hover { transform: scale(1.1); }
+  .avatar-option.selected { border-color: var(--accent); }
+  .avatar-option svg { width: 100%; height: 100%; }
+
+  /* Unlockables display */
+  .unlockables {
+    font-size: 0.75rem;
+    color: #888;
+    margin-top: 8px;
+    margin-bottom: 16px;
+  }
+  .unlockable-item {
+    display: inline-block;
+    padding: 3px 8px;
+    margin: 2px;
+    border-radius: 6px;
+    font-size: 0.7rem;
+  }
+  .unlockable-item.locked { background: #1e2740; color: #555; }
+  .unlockable-item.unlocked { background: #1a2a1a; color: var(--accent); }
+
+  /* Debug / Feedback bar */
+  .feedback-bar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: #0d1117;
+    border-top: 1px solid #2a3450;
+    padding: 8px 16px;
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    z-index: 200;
+    font-size: 0.8rem;
+  }
+  .feedback-bar input {
+    flex: 1;
+    padding: 8px 12px;
+    border-radius: 6px;
+    border: 1px solid #2a3450;
+    background: #141b2d;
+    color: #e0e0e0;
+    font-size: 0.85rem;
+  }
+  .feedback-bar input::placeholder { color: #555; }
+  .feedback-bar button {
+    background: #ff9800;
+    color: #0a0e1a;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-weight: 700;
+    font-size: 0.8rem;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+  .feedback-bar button:hover { background: #ffa726; }
+  .feedback-bar .fb-status {
+    color: #888;
+    font-size: 0.75rem;
+    white-space: nowrap;
+  }
+  .feedback-bar .fb-count {
+    color: #ff9800;
+    font-size: 0.75rem;
+    white-space: nowrap;
+  }
+</style>
+</head>
+<body>
+
+<h1 id="game-title">Airspace Quiz</h1>
+<div class="subtitle" id="game-subtitle">Learning Looper — Tap the correct airspace class</div>
+
+<!-- Player bar (visible during game) -->
+<div class="player-bar" id="player-bar">
+  <div class="player-info">
+    <div class="avatar" id="hud-avatar"></div>
+    <span class="player-name-label" id="hud-player-name"></span>
+  </div>
+  <button class="logout-btn" id="logout-btn">Log Out</button>
+</div>
+
+<!-- HUD -->
+<div class="hud" id="hud" style="display:none;">
+  <div class="hud-item">
+    <div class="label">Score</div>
+    <div class="value" id="score">0</div>
+  </div>
+  <div class="hud-item">
+    <div class="label">Streak</div>
+    <div class="value streak" id="streak">0</div>
+  </div>
+  <div class="hud-item">
+    <div class="label">Bonus</div>
+    <div class="value bonus" id="bonus">&nbsp;</div>
+  </div>
+  <div class="hud-item">
+    <div class="label">Level</div>
+    <div class="value" id="level-num">1</div>
+  </div>
+</div>
+
+<!-- Level banner -->
+<div class="level-banner" id="level-banner" style="display:none;">
+  <h2 id="level-title"></h2>
+  <div class="desc" id="level-desc"></div>
+</div>
+
+<!-- Progress bar -->
+<div class="progress-wrap" id="progress-wrap" style="display:none;">
+  <div class="progress-bar-bg">
+    <div class="progress-bar-fill" id="progress-fill" style="width:0%"></div>
+  </div>
+  <div class="progress-label" id="progress-label">0 / 0 to advance</div>
+</div>
+
+<!-- Question card -->
+<div class="question-card" id="question-card" style="display:none;">
+  <div class="fact-label" id="fact-label"></div>
+  <div class="question-text" id="question-text"></div>
+  <div id="reg-ref" style="margin-top:10px;">
+    <button id="show-reg-btn" style="background:transparent; border:1px solid #444; color:#888; padding:4px 12px; border-radius:6px; font-size:0.7rem; cursor:pointer;">Show Regulation</button>
+    <div id="reg-text" style="display:none; margin-top:8px; padding:10px; background:#0d1117; border-radius:8px; font-size:0.75rem; color:#aaa; text-align:left; line-height:1.5;">
+      <div id="reg-cite" style="color:var(--accent); font-weight:bold; margin-bottom:4px;"></div>
+      <div id="reg-body"></div>
+      <a id="reg-link" href="#" target="_blank" style="color:#4D96FF; font-size:0.7rem; margin-top:6px; display:inline-block;">Read full text on eCFR</a>
+    </div>
+  </div>
+</div>
+
+<!-- Answer buttons -->
+<div class="answers" id="answers" style="display:none;"></div>
+<button class="submit-btn" id="submit-multi" style="display:none;" disabled>Submit Answer</button>
+
+<!-- Feedback overlay -->
+<div class="feedback" id="feedback">
+  <div class="feedback-inner" id="feedback-inner">
+    <div class="feedback-icon" id="feedback-icon"></div>
+    <div class="feedback-text" id="feedback-text"></div>
+    <div class="feedback-detail" id="feedback-detail"></div>
+    <div class="feedback-bonus" id="feedback-bonus"></div>
+  </div>
+</div>
+
+<!-- Level complete -->
+<div class="level-complete" id="level-complete">
+  <h2 id="complete-title"></h2>
+  <div class="stats" id="complete-stats"></div>
+  <button class="next-btn" id="next-btn">Next Level</button>
+</div>
+
+<!-- Leaderboard -->
+<div id="leaderboard-screen" style="display:none; width:100%; max-width:600px;">
+  <h2 style="color:var(--accent); margin-bottom:16px; text-align:center;">Leaderboard</h2>
+  <div id="leaderboard-list" style="margin-bottom:20px;"></div>
+  <div style="text-align:center;">
+    <button class="next-btn" id="lb-back-btn">Back</button>
+  </div>
+</div>
+
+<!-- Start screen -->
+<div class="start-screen" id="start-screen">
+  <p>Master FAA airspace classifications one level at a time. Buttons are color-matched to sectional chart depictions — you'll learn the colors as you play.</p>
+
+  <div style="margin-bottom:16px; text-align:center;">
+    <div style="display:flex; align-items:center; justify-content:center; gap:16px; margin-bottom:8px;">
+      <button class="next-btn" id="avatar-prev" style="padding:6px 12px; font-size:0.8rem;">&lt;</button>
+      <img id="start-avatar" width="80" height="80" style="border-radius:50%; background:#1e2740; cursor:pointer;" title="Click arrows to customize">
+      <button class="next-btn" id="avatar-next" style="padding:6px 12px; font-size:0.8rem;">&gt;</button>
+    </div>
+    <div style="display:flex; justify-content:center; gap:8px; margin-bottom:8px;">
+      <button class="next-btn" id="avatar-boy" style="padding:5px 14px; font-size:0.75rem; background:#4D96FF;">Boy</button>
+      <button class="next-btn" id="avatar-girl" style="padding:5px 14px; font-size:0.75rem; background:#FF6B9D;">Girl</button>
+    </div>
+    <div id="unlockables-display" class="unlockables" style="margin:0;"></div>
+  </div>
+
+  <div style="margin-bottom:16px;">
+    <label style="font-size:0.75rem; color:#888; text-transform:uppercase; letter-spacing:1px;">Theme</label>
+    <div id="theme-picker" style="display:flex; flex-wrap:wrap; gap:6px; justify-content:center; margin-top:6px;"></div>
+  </div>
+
+  <div class="legend">
+    <div class="legend-item"><div class="legend-swatch" style="background:#666;border:2px solid #888;"></div> Class A — Gray (not on charts)</div>
+    <div class="legend-item"><div class="legend-swatch" style="background:#0055BF;border:2px solid #3388dd;"></div> Class B — Solid Blue</div>
+    <div class="legend-item"><div class="legend-swatch" style="background:#C2185B;border:2px solid #e91e63;"></div> Class C — Solid Magenta</div>
+    <div class="legend-item"><div class="legend-swatch" style="background:#1976D2;border:2px dashed #42a5f5;"></div> Class D — Dashed Blue</div>
+    <div class="legend-item"><div class="legend-swatch" style="background:linear-gradient(135deg,#AD1457,#880E4F44);border:2px solid #AD145766;"></div> Class E — Faded Magenta</div>
+    <div class="legend-item"><div class="legend-swatch" style="background:#333;border:2px dotted #666;"></div> Class G — Unmarked</div>
+  </div>
+  <div style="margin-bottom:16px;">
+    <label style="font-size:0.85rem; color:#888;">Player Name:</label><br>
+    <input type="text" id="player-name" placeholder="Enter your name"
+      style="margin-top:6px; padding:10px 16px; border-radius:8px; border:1px solid #2a3450;
+             background:#141b2d; color:#e0e0e0; font-size:1rem; width:100%; max-width:280px;">
+  </div>
+  <button class="next-btn" id="start-btn">Start Level 1</button>
+
+  <div id="home-leaderboard" style="margin-top:20px; width:100%;"></div>
+</div>
+
+<script>
+// ============================================================
+// AIRSPACE DATA
+// ============================================================
+// CFR references for each attribute — maps to eCFR URLs
+const CFR_REFS = {
+  A: {
+    entry_requirement: { cfr: '14 CFR §91.135', url: 'https://www.ecfr.gov/current/title-14/section-91.135', text: 'Each person operating an aircraft in Class A airspace must conduct that operation under IFR and... Operations may be conducted only under an ATC clearance.' },
+    flight_rules: { cfr: '14 CFR §91.135', url: 'https://www.ecfr.gov/current/title-14/section-91.135', text: 'Each person operating an aircraft in Class A airspace must conduct that operation under instrument flight rules (IFR).' },
+    communication: { cfr: '14 CFR §91.135', url: 'https://www.ecfr.gov/current/title-14/section-91.135', text: 'Operations may be conducted only under an ATC clearance received prior to entering the airspace.' },
+    transponder: { cfr: '14 CFR §91.215', url: 'https://www.ecfr.gov/current/title-14/section-91.215', text: 'ATC transponder with altitude reporting equipment required.' },
+    vfr_cloud_clearance: { cfr: '14 CFR §91.135', url: 'https://www.ecfr.gov/current/title-14/section-91.135', text: 'VFR not permitted in Class A airspace.' },
+    chart_depiction: { cfr: 'FAA AIM 3-2-2', url: 'https://www.faa.gov/air_traffic/publications/atpubs/aim_html/chap3_section_2.html', text: 'Class A airspace is not specifically charted on sectional charts.' },
+  },
+  B: {
+    entry_requirement: { cfr: '14 CFR §91.131(a)(1)', url: 'https://www.ecfr.gov/current/title-14/section-91.131', text: 'The operator must receive an ATC clearance from the ATC facility having jurisdiction for that area before operating an aircraft in that area.' },
+    vfr_cloud_clearance: { cfr: '14 CFR §91.155', url: 'https://www.ecfr.gov/current/title-14/section-91.155', text: 'Class B: Flight visibility 3 statute miles. Cloud clearance: Clear of clouds.' },
+    chart_depiction: { cfr: 'FAA AIM 3-2-3', url: 'https://www.faa.gov/air_traffic/publications/atpubs/aim_html/chap3_section_2.html', text: 'Class B airspace is charted on Sectional Charts with solid blue lines.' },
+    transponder: { cfr: '14 CFR §91.215(b)(5)', url: 'https://www.ecfr.gov/current/title-14/section-91.215', text: 'All aircraft in Class B airspace must have Mode C transponder.' },
+    communication: { cfr: '14 CFR §91.131', url: 'https://www.ecfr.gov/current/title-14/section-91.131', text: 'Two-way radio communication required.' },
+    flight_rules: { cfr: '14 CFR §91.131', url: 'https://www.ecfr.gov/current/title-14/section-91.131', text: 'Both IFR and VFR operations permitted with ATC clearance.' },
+    speed_limit: { cfr: '14 CFR §91.117', url: 'https://www.ecfr.gov/current/title-14/section-91.117', text: '(a) 250 knots below 10,000 feet MSL. (b) 200 knots at or below 2,500 AGL within 4 NM — does NOT apply within Class B. (c) 200 knots applies underlying Class B.' },
+  },
+  C: {
+    entry_requirement: { cfr: '14 CFR §91.130(c)(1)', url: 'https://www.ecfr.gov/current/title-14/section-91.130', text: 'Each person must establish two-way radio communications with the ATC facility providing air traffic services prior to entering that airspace.' },
+    vfr_cloud_clearance: { cfr: '14 CFR §91.155', url: 'https://www.ecfr.gov/current/title-14/section-91.155', text: 'Class C: 3 SM visibility. 500 ft below, 1,000 ft above, 2,000 ft horizontal from clouds.' },
+    chart_depiction: { cfr: 'FAA AIM 3-2-4', url: 'https://www.faa.gov/air_traffic/publications/atpubs/aim_html/chap3_section_2.html', text: 'Class C airspace is charted on Sectional Charts with solid magenta lines.' },
+    transponder: { cfr: '14 CFR §91.215(b)(5)', url: 'https://www.ecfr.gov/current/title-14/section-91.215', text: 'Mode C transponder required within and above Class C airspace.' },
+    communication: { cfr: '14 CFR §91.130(c)', url: 'https://www.ecfr.gov/current/title-14/section-91.130', text: 'Two-way radio communications must be established prior to entry.' },
+  },
+  D: {
+    entry_requirement: { cfr: '14 CFR §91.129(c)(1)', url: 'https://www.ecfr.gov/current/title-14/section-91.129', text: 'Each person must establish two-way radio communications with the ATC facility providing air traffic services prior to entering that airspace.' },
+    vfr_cloud_clearance: { cfr: '14 CFR §91.155', url: 'https://www.ecfr.gov/current/title-14/section-91.155', text: 'Class D: 3 SM visibility. 500 ft below, 1,000 ft above, 2,000 ft horizontal from clouds.' },
+    chart_depiction: { cfr: 'FAA AIM 3-2-5', url: 'https://www.faa.gov/air_traffic/publications/atpubs/aim_html/chap3_section_2.html', text: 'Class D airspace is charted on Sectional Charts with dashed blue lines.' },
+    transponder: { cfr: '14 CFR §91.215', url: 'https://www.ecfr.gov/current/title-14/section-91.215', text: 'Transponder not required by Class D itself. Required if within Mode C veil.' },
+    communication: { cfr: '14 CFR §91.129(c)', url: 'https://www.ecfr.gov/current/title-14/section-91.129', text: 'Two-way radio communications must be established prior to entry.' },
+  },
+  E: {
+    entry_requirement: { cfr: '14 CFR §91.127', url: 'https://www.ecfr.gov/current/title-14/section-91.127', text: 'No specific entry or communication requirement for VFR in Class E.' },
+    vfr_cloud_clearance: { cfr: '14 CFR §91.155', url: 'https://www.ecfr.gov/current/title-14/section-91.155', text: 'Class E below 10,000 MSL: 3 SM, 500/1,000/2,000. At or above 10,000 MSL: 5 SM, 1,000/1,000/1 SM.' },
+    chart_depiction: { cfr: 'FAA AIM 3-2-6', url: 'https://www.faa.gov/air_traffic/publications/atpubs/aim_html/chap3_section_2.html', text: 'Magenta vignette for 700 AGL floor. Dashed magenta for surface-based. Blue vignette for 1,200 AGL floor.' },
+    transponder: { cfr: '14 CFR §91.215(b)(5)', url: 'https://www.ecfr.gov/current/title-14/section-91.215', text: 'Required at and above 10,000 feet MSL (excluding at/below 2,500 AGL) and within Mode C veil.' },
+    communication: { cfr: '14 CFR §91.127', url: 'https://www.ecfr.gov/current/title-14/section-91.127', text: 'No communication requirement for VFR in Class E.' },
+    vfr_visibility: { cfr: '14 CFR §91.155', url: 'https://www.ecfr.gov/current/title-14/section-91.155', text: '3 SM below 10,000 MSL. 5 SM at or above 10,000 MSL.' },
+  },
+  G: {
+    entry_requirement: { cfr: '14 CFR §91.126', url: 'https://www.ecfr.gov/current/title-14/section-91.126', text: 'No entry requirement. Uncontrolled airspace.' },
+    vfr_cloud_clearance: { cfr: '14 CFR §91.155', url: 'https://www.ecfr.gov/current/title-14/section-91.155', text: 'Day below 1,200 AGL: 1 SM, clear of clouds. Night: 3 SM, 500/1,000/2,000.' },
+    chart_depiction: { cfr: 'FAA AIM 3-3-1', url: 'https://www.faa.gov/air_traffic/publications/atpubs/aim_html/chap3_section_3.html', text: 'Class G is not specifically charted — it is the absence of depicted controlled airspace.' },
+    transponder: { cfr: '14 CFR §91.215', url: 'https://www.ecfr.gov/current/title-14/section-91.215', text: 'Transponder not required in Class G (unless within Mode C veil or above 10,000 MSL).' },
+    communication: { cfr: '14 CFR §91.126', url: 'https://www.ecfr.gov/current/title-14/section-91.126', text: 'No communication requirement in Class G.' },
+    vfr_visibility: { cfr: '14 CFR §91.155', url: 'https://www.ecfr.gov/current/title-14/section-91.155', text: 'Day below 1,200 AGL: 1 SM. Night: 3 SM.' },
+  }
+};
+
+const AIRSPACE = {
+  A: {
+    name: "Class A", altitude: "18,000' MSL to FL600",
+    flight_rules: "IFR only", entry_requirement: "ATC clearance + IFR flight plan",
+    communication: "Two-way radio required", transponder: "Mode C required",
+    vfr_allowed: "No — IFR only", vfr_cloud_clearance: "N/A (no VFR)",
+    vfr_visibility: "N/A (no VFR)",
+    chart_color: "Not depicted (defined by altitude)", chart_line: "None",
+    speed_limit: "No class-specific speed limit"
+  },
+  B: {
+    name: "Class B", altitude: "Surface to ~10,000' MSL",
+    flight_rules: "IFR and VFR", entry_requirement: "ATC clearance required",
+    communication: "Two-way radio required", transponder: "Mode C required",
+    vfr_allowed: "Yes", vfr_cloud_clearance: "Clear of clouds",
+    vfr_visibility: "3 statute miles",
+    chart_color: "Solid blue lines", chart_line: "Solid",
+    speed_limit: "250 KIAS below 10,000' MSL (200 KIAS does NOT apply inside Class B)"
+  },
+  C: {
+    name: "Class C", altitude: "Surface to ~4,000' AGL",
+    flight_rules: "IFR and VFR",
+    entry_requirement: "Two-way radio contact with ATC (not clearance)",
+    communication: "Two-way radio required", transponder: "Mode C required",
+    vfr_allowed: "Yes",
+    vfr_cloud_clearance: "500' below, 1,000' above, 2,000' horizontal",
+    vfr_visibility: "3 statute miles",
+    chart_color: "Solid magenta lines", chart_line: "Solid",
+    speed_limit: "200 KIAS at or below 2,500' AGL within 4 NM of primary airport (14 CFR 91.117(b))"
+  },
+  D: {
+    name: "Class D", altitude: "Surface to ~2,500' AGL",
+    flight_rules: "IFR and VFR",
+    entry_requirement: "Two-way radio contact with ATC",
+    communication: "Two-way radio required",
+    transponder: "Not required by class",
+    vfr_allowed: "Yes",
+    vfr_cloud_clearance: "500' below, 1,000' above, 2,000' horizontal",
+    vfr_visibility: "3 statute miles",
+    chart_color: "Dashed blue lines", chart_line: "Dashed",
+    speed_limit: "200 KIAS at or below 2,500' AGL within 4 NM of primary airport (14 CFR 91.117(b))"
+  },
+  E: {
+    name: "Class E", altitude: "Varies (700' or 1,200' AGL up to 18,000' MSL)",
+    flight_rules: "IFR and VFR",
+    entry_requirement: "None for VFR",
+    communication: "Not required for VFR",
+    transponder: "Required above 10,000' MSL and in Mode C veil",
+    vfr_allowed: "Yes",
+    vfr_cloud_clearance: "500' below, 1,000' above, 2,000' horizontal (below 10,000')",
+    vfr_visibility: "3 SM below 10,000'; 5 SM at/above 10,000'",
+    chart_color: "Magenta vignette (faded shading); blue vignette for 1,200' AGL floor", chart_line: "Faded/shaded",
+    speed_limit: "250 KIAS below 10,000' MSL"
+  },
+  G: {
+    name: "Class G", altitude: "Surface to base of Class E",
+    flight_rules: "VFR and IFR (uncontrolled)",
+    entry_requirement: "None",
+    communication: "Not required",
+    transponder: "Not required",
+    vfr_allowed: "Yes",
+    vfr_cloud_clearance: "Clear of clouds (day, below 1,200' AGL)",
+    vfr_visibility: "1 SM (day below 1,200' AGL); 3 SM at night",
+    chart_color: "Not depicted (absence of other airspace)", chart_line: "None",
+    speed_limit: "250 KIAS below 10,000' MSL"
+  }
+};
+
+// ============================================================
+// QUESTION BANK — attribute-keyed for level filtering
+// ============================================================
+function buildQuestions() {
+  const qs = [];
+  const classes = Object.keys(AIRSPACE);
+
+  // Helper: create a "which class" question
+  function whichClass(attribute, attrLabel, value, correctClass, distractors) {
+    const options = [correctClass, ...distractors].sort(() => Math.random() - 0.5);
+    qs.push({
+      attribute,
+      text: `Which airspace class has this ${attrLabel}?\n"${value}"`,
+      options,
+      correct: correctClass
+    });
+  }
+
+  // Helper: create a "what is the X for class Y" question
+  function whatIs(cls, attribute, attrLabel, correctValue, distractorValues) {
+    const options = [correctValue, ...distractorValues].sort(() => Math.random() - 0.5);
+    qs.push({
+      attribute,
+      text: `${AIRSPACE[cls].name}: What is the ${attrLabel}?`,
+      options: options.map(v => ({ label: v, value: v })),
+      correct: correctValue,
+      forClass: cls,
+      isValueQuestion: true
+    });
+  }
+
+  // Entry requirement questions
+  whichClass("entry_requirement", "entry requirement", "ATC clearance required", "B", ["C", "D", "E"]);
+  // C and D both require "radio contact, not clearance" — use whatIs instead
+  whatIs("C", "entry_requirement", "entry requirement",
+    "Two-way radio contact with ATC (not clearance)",
+    ["ATC clearance required", "None for VFR", "Squawk code only"]);
+  // E and G both have no entry requirement — use whatIs instead
+  whatIs("E", "entry_requirement", "entry requirement",
+    "None for VFR",
+    ["ATC clearance required", "Two-way radio contact", "Mode C transponder only"]);
+  whichClass("entry_requirement", "entry requirement", "None — uncontrolled", "G", ["E", "D", "A"]);
+  whichClass("entry_requirement", "entry requirement", "ATC clearance + IFR flight plan", "A", ["B", "C", "D"]);
+
+  whatIs("B", "entry_requirement", "entry requirement",
+    "ATC clearance required",
+    ["Radio contact only", "None for VFR", "IFR flight plan only"]);
+  whatIs("C", "entry_requirement", "entry requirement",
+    "Two-way radio contact with ATC (not clearance)",
+    ["ATC clearance required", "None", "Squawk code only"]);
+  whatIs("D", "entry_requirement", "entry requirement",
+    "Two-way radio contact with ATC",
+    ["ATC clearance required", "None for VFR", "Mode C transponder only"]);
+
+  // VFR cloud clearance questions — use "what is" format since C/D/E share 500/1000/2000
+  whatIs("B", "vfr_cloud_clearance", "VFR cloud clearance",
+    "Clear of clouds",
+    ["500' below, 1,000' above, 2,000' horizontal", "1,000' all directions", "Not applicable"]);
+  whatIs("C", "vfr_cloud_clearance", "VFR cloud clearance",
+    "500' below, 1,000' above, 2,000' horizontal",
+    ["Clear of clouds", "1,000' all directions", "Not applicable"]);
+  whatIs("D", "vfr_cloud_clearance", "VFR cloud clearance",
+    "500' below, 1,000' above, 2,000' horizontal",
+    ["Clear of clouds", "1,000' all directions", "Not applicable"]);
+  whatIs("E", "vfr_cloud_clearance", "VFR cloud clearance (below 10,000' MSL)",
+    "500' below, 1,000' above, 2,000' horizontal",
+    ["Clear of clouds", "1,000' below, 1,000' above, 1 SM horizontal", "Not applicable"]);
+  whatIs("G", "vfr_cloud_clearance", "VFR cloud clearance (day, below 1,200' AGL)",
+    "Clear of clouds",
+    ["500' below, 1,000' above, 2,000' horizontal", "1 SM from clouds", "Not applicable"]);
+  // Only B has "clear of clouds" among controlled — safe as unique identifier
+  whichClass("vfr_cloud_clearance", "VFR cloud clearance", "Clear of clouds (in controlled airspace)", "B", ["C", "D", "E"]);
+
+  // Chart depiction questions
+  whichClass("chart_depiction", "chart depiction", "Solid blue lines", "B", ["C", "D", "E"]);
+  whichClass("chart_depiction", "chart depiction", "Solid magenta lines", "C", ["B", "D", "E"]);
+  whichClass("chart_depiction", "chart depiction", "Dashed blue lines", "D", ["B", "C", "E"]);
+  whichClass("chart_depiction", "chart depiction", "Magenta vignette (faded shading)", "E", ["C", "B", "D"]);
+  whichClass("chart_depiction", "chart depiction", "Not directly depicted — exists below the floor of Class E", "G", ["E", "B", "D"]);
+
+  whatIs("B", "chart_depiction", "chart line type",
+    "Solid", ["Dashed", "Faded/shaded", "Dotted"]);
+  whatIs("D", "chart_depiction", "chart line type",
+    "Dashed", ["Solid", "Faded/shaded", "None"]);
+  whatIs("B", "chart_depiction", "chart color",
+    "Blue", ["Magenta", "Red", "Green"]);
+  whatIs("C", "chart_depiction", "chart color",
+    "Magenta", ["Blue", "Red", "Green"]);
+
+  // Transponder questions — D and G both "not required" so use "what is" format
+  whatIs("D", "transponder", "transponder requirement",
+    "Not required by class",
+    ["Mode C required", "Mode A only", "ADS-B only"]);
+  whatIs("B", "transponder", "transponder requirement",
+    "Mode C required",
+    ["Not required by class", "Mode A only", "Not required"]);
+  whatIs("G", "transponder", "transponder requirement",
+    "Not required",
+    ["Mode C required", "Mode A only", "ADS-B only"]);
+
+  // Flight rules questions — A is uniquely "IFR only", safe for whichClass. Others shared, use whatIs.
+  whichClass("flight_rules", "flight rule", "IFR only", "A", ["B", "C", "D"]);
+  whatIs("A", "flight_rules", "allowed flight rules",
+    "IFR only", ["IFR and VFR", "VFR only", "SVFR only"]);
+  whatIs("B", "flight_rules", "allowed flight rules",
+    "IFR and VFR", ["IFR only", "VFR only", "SVFR only"]);
+
+  // Communication questions — A/B/C/D all share "two-way radio required", so use "what is" for those
+  whatIs("B", "communication", "communication requirement",
+    "Two-way radio required",
+    ["Not required", "Not required for VFR", "Transponder only"]);
+  whatIs("E", "communication", "communication requirement for VFR",
+    "Not required for VFR",
+    ["Two-way radio required", "Not required", "ATC clearance required"]);
+  whatIs("G", "communication", "communication requirement",
+    "Not required",
+    ["Two-way radio required", "Not required for VFR", "Radio contact with ATC"]);
+
+  // VFR visibility
+  whatIs("G", "vfr_visibility", "minimum VFR visibility (day, below 1,200' AGL)",
+    "1 statute mile", ["3 statute miles", "5 statute miles", "Clear of clouds"]);
+  whatIs("E", "vfr_visibility", "VFR visibility at/above 10,000' MSL",
+    "5 statute miles", ["3 statute miles", "1 statute mile", "10 statute miles"]);
+
+  // Altitude
+  whichClass("altitude", "altitude range", "18,000' MSL to FL600", "A", ["B", "E", "G"]);
+  whichClass("altitude", "altitude range", "Surface to base of Class E", "G", ["E", "D", "A"]);
+
+  // ============================================================
+  // SELECT-ALL questions (backward: attribute → multiple classes)
+  // Used in levels 7+ for shared attributes
+  // ============================================================
+  function selectAll(attribute, attrLabel, value, correctClasses, allOptions) {
+    qs.push({
+      attribute,
+      text: `Select ALL classes where: ${attrLabel} is "${value}"`,
+      options: allOptions,
+      correctSet: correctClasses,
+      isSelectAll: true
+    });
+  }
+
+  // Communication: "Two-way radio required" — shared by A, B, C, D
+  selectAll("communication", "communication", "Two-way radio required",
+    ["A", "B", "C", "D"], ["A", "B", "C", "D", "E", "G"]);
+
+  // Communication: "Not required" — only G
+  selectAll("communication", "communication", "Not required at all",
+    ["G"], ["A", "B", "C", "D", "E", "G"]);
+
+  // VFR cloud clearance: "500' below, 1,000' above, 2,000' horizontal" — C, D, E
+  selectAll("vfr_cloud_clearance", "VFR cloud clearance (below 10,000')", "500' below, 1,000' above, 2,000' horizontal",
+    ["C", "D", "E"], ["A", "B", "C", "D", "E", "G"]);
+
+  // Transponder: "Mode C required" — A, B, C
+  selectAll("transponder", "transponder", "Mode C required (by class)",
+    ["A", "B", "C"], ["A", "B", "C", "D", "E", "G"]);
+
+  // Entry: requires some form of ATC communication before entry — A, B, C, D
+  selectAll("entry_requirement", "entry requirement", "Must contact ATC before entering",
+    ["A", "B", "C", "D"], ["A", "B", "C", "D", "E", "G"]);
+
+  // VFR allowed
+  selectAll("flight_rules", "VFR operations", "VFR flight is permitted",
+    ["B", "C", "D", "E", "G"], ["A", "B", "C", "D", "E", "G"]);
+
+  // Chart color: blue used — B and D
+  selectAll("chart_depiction", "chart depiction", "Uses blue on sectional charts",
+    ["B", "D"], ["A", "B", "C", "D", "E", "G"]);
+
+  // Chart color: magenta used — C and E
+  selectAll("chart_depiction", "chart depiction", "Uses magenta on sectional charts",
+    ["C", "E"], ["A", "B", "C", "D", "E", "G"]);
+
+  // VFR visibility: 3 SM — B, C, D, E (below 10,000')
+  selectAll("vfr_visibility", "VFR visibility", "3 statute miles minimum",
+    ["B", "C", "D"], ["A", "B", "C", "D", "E", "G"]);
+
+  return qs;
+}
+
+// ============================================================
+// LEVELS
+// ============================================================
+const LEVELS = [
+  {
+    level: 1, title: "Class B Basics",
+    desc: "One class, one fact — learn Class B's entry requirement",
+    classes: ["B"], facts: ["entry_requirement"], questionsNeeded: 5
+  },
+  {
+    level: 2, title: "Class B Expanded",
+    desc: "Add cloud clearance and chart depiction for Class B",
+    classes: ["B"], facts: ["entry_requirement", "vfr_cloud_clearance", "chart_depiction"], questionsNeeded: 7
+  },
+  {
+    level: 3, title: "B vs C",
+    desc: "Introduce Class C — compare entry, clouds, and chart colors",
+    classes: ["B", "C"], facts: ["entry_requirement", "vfr_cloud_clearance", "chart_depiction"], questionsNeeded: 8
+  },
+  {
+    level: 4, title: "Adding Class D",
+    desc: "Class D joins — dashed blue vs solid blue, transponder differences",
+    classes: ["B", "C", "D"], facts: ["entry_requirement", "vfr_cloud_clearance", "chart_depiction", "transponder"], questionsNeeded: 10
+  },
+  {
+    level: 5, title: "Controlled Airspace",
+    desc: "All controlled classes (A–D) — flight rules, communication, the works",
+    classes: ["A", "B", "C", "D"], facts: ["entry_requirement", "vfr_cloud_clearance", "chart_depiction", "transponder", "flight_rules", "communication"], questionsNeeded: 12
+  },
+  {
+    level: 6, title: "E and G",
+    desc: "The uncontrolled and 'everything else' — what's NOT required",
+    classes: ["E", "G"], facts: ["entry_requirement", "communication", "transponder", "chart_depiction", "vfr_visibility", "vfr_cloud_clearance"], questionsNeeded: 10
+  },
+  {
+    level: 7, title: "Full Picture",
+    desc: "All six classes — now with 'select all that apply' for shared attributes",
+    classes: ["A", "B", "C", "D", "E", "G"],
+    facts: ["entry_requirement", "vfr_cloud_clearance", "chart_depiction", "transponder", "flight_rules", "communication", "vfr_visibility", "altitude"],
+    questionsNeeded: 15,
+    includeSelectAll: true
+  },
+  {
+    level: 8, title: "Boss Round",
+    desc: "Speed round — all formats, streak multipliers, variable bonuses",
+    classes: ["A", "B", "C", "D", "E", "G"],
+    facts: ["entry_requirement", "vfr_cloud_clearance", "chart_depiction", "transponder", "flight_rules", "communication", "vfr_visibility", "altitude"],
+    questionsNeeded: 20,
+    timed: true,
+    includeSelectAll: true
+  }
+];
+
+// ============================================================
+// AUDIO (Web Audio API — synthesized, no files needed)
+// ============================================================
+const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+function playTone(freq, duration, type = 'sine', gain = 0.3) {
+  const osc = audioCtx.createOscillator();
+  const g = audioCtx.createGain();
+  osc.type = type;
+  osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+  g.gain.setValueAtTime(gain, audioCtx.currentTime);
+  g.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
+  osc.connect(g);
+  g.connect(audioCtx.destination);
+  osc.start();
+  osc.stop(audioCtx.currentTime + duration);
+}
+
+function playCorrect() {
+  playTone(523, 0.1, 'sine', 0.3);
+  setTimeout(() => playTone(659, 0.1, 'sine', 0.3), 80);
+  setTimeout(() => playTone(784, 0.15, 'sine', 0.3), 160);
+}
+
+function playWrong() {
+  playTone(200, 0.15, 'sawtooth', 0.2);
+  setTimeout(() => playTone(180, 0.2, 'sawtooth', 0.2), 100);
+}
+
+function playBonus() {
+  playTone(784, 0.08, 'sine', 0.25);
+  setTimeout(() => playTone(988, 0.08, 'sine', 0.25), 60);
+  setTimeout(() => playTone(1175, 0.12, 'sine', 0.3), 120);
+  setTimeout(() => playTone(1318, 0.2, 'sine', 0.3), 180);
+}
+
+function playLevelUp() {
+  [523, 587, 659, 784, 880, 1047].forEach((f, i) => {
+    setTimeout(() => playTone(f, 0.15, 'sine', 0.25), i * 80);
+  });
+}
+
+// ============================================================
+// MASTERY TRACKING (persisted to localStorage)
+// ============================================================
+const MASTERY_KEY = 'learning-looper-airspace-mastery';
+
+function loadMastery() {
+  try {
+    const raw = localStorage.getItem(MASTERY_KEY);
+    if (raw) return JSON.parse(raw);
+  } catch (e) {}
+  return initMastery();
+}
+
+function initMastery() {
+  const m = {
+    sessions: [],
+    perClass: {},
+    perAttribute: {},
+    perClassAttribute: {},
+    highestLevelCompleted: 0,
+    totalCorrect: 0,
+    totalWrong: 0,
+    totalScore: 0,
+    bestStreak: 0,
+    lastPlayed: null
+  };
+  ['A','B','C','D','E','G'].forEach(c => {
+    m.perClass[c] = { correct: 0, wrong: 0, lastSeen: null };
+  });
+  ['entry_requirement','vfr_cloud_clearance','chart_depiction','transponder',
+   'flight_rules','communication','vfr_visibility','altitude'].forEach(a => {
+    m.perAttribute[a] = { correct: 0, wrong: 0, lastSeen: null };
+  });
+  ['A','B','C','D','E','G'].forEach(c => {
+    ['entry_requirement','vfr_cloud_clearance','chart_depiction','transponder',
+     'flight_rules','communication','vfr_visibility','altitude'].forEach(a => {
+      m.perClassAttribute[`${c}:${a}`] = { correct: 0, wrong: 0, lastSeen: null };
+    });
+  });
+  return m;
+}
+
+function saveMastery() {
+  try {
+    localStorage.setItem(MASTERY_KEY, JSON.stringify(mastery));
+  } catch (e) {}
+}
+
+function recordAnswer(cls, attribute, isCorrect) {
+  const now = new Date().toISOString();
+  // Per-class
+  if (mastery.perClass[cls]) {
+    mastery.perClass[cls][isCorrect ? 'correct' : 'wrong']++;
+    mastery.perClass[cls].lastSeen = now;
+  }
+  // Per-attribute
+  if (mastery.perAttribute[attribute]) {
+    mastery.perAttribute[attribute][isCorrect ? 'correct' : 'wrong']++;
+    mastery.perAttribute[attribute].lastSeen = now;
+  }
+  // Per class:attribute
+  const key = `${cls}:${attribute}`;
+  if (mastery.perClassAttribute[key]) {
+    mastery.perClassAttribute[key][isCorrect ? 'correct' : 'wrong']++;
+    mastery.perClassAttribute[key].lastSeen = now;
+  }
+  // Totals
+  mastery[isCorrect ? 'totalCorrect' : 'totalWrong']++;
+  saveMastery();
+}
+
+function recordSession(level, score, correct, wrong, streak) {
+  mastery.sessions.push({
+    date: new Date().toISOString(),
+    level, score, correct, wrong, bestStreak: streak
+  });
+  if (level > mastery.highestLevelCompleted) mastery.highestLevelCompleted = level;
+  mastery.totalScore = state.score;
+  if (streak > mastery.bestStreak) mastery.bestStreak = streak;
+  mastery.lastPlayed = new Date().toISOString();
+  saveMastery();
+}
+
+function getMasteryPct(cls) {
+  const d = mastery.perClass[cls];
+  if (!d || (d.correct + d.wrong) === 0) return 0;
+  return Math.round((d.correct / (d.correct + d.wrong)) * 100);
+}
+
+const mastery = loadMastery();
+
+// ============================================================
+// GAME STATE
+// ============================================================
+let state = {
+  currentLevel: 0,
+  score: 0,
+  streak: 0,
+  bestStreak: 0,
+  correct: 0,
+  wrong: 0,
+  levelCorrect: 0,
+  levelWrong: 0,
+  questionPool: [],
+  currentQuestion: null,
+  locked: false
+};
+
+const allQuestions = buildQuestions();
+
+// ============================================================
+// DOM REFS
+// ============================================================
+const $ = id => document.getElementById(id);
+
+// ============================================================
+// GAME LOGIC
+// ============================================================
+function startGame() {
+  $('start-screen').style.display = 'none';
+  $('hud').style.display = 'flex';
+  $('level-banner').style.display = 'block';
+  $('progress-wrap').style.display = 'block';
+  $('question-card').style.display = 'flex';
+  $('answers').style.display = 'grid';
+  // Resume from highest completed level
+  const profile = profiles[state.playerName];
+  const resumeLevel = profile?.highestLevel ? Math.min(profile.highestLevel, LEVELS.length - 1) : 0;
+  loadLevel(resumeLevel);
+}
+
+function loadLevel(idx) {
+  state.currentLevel = idx;
+  state.levelCorrect = 0;
+  state.levelWrong = 0;
+  $('level-complete').style.display = 'none';
+  $('question-card').style.display = 'flex';
+  $('answers').style.display = 'grid';
+
+  const lvl = LEVELS[idx];
+  $('level-num').textContent = lvl.level;
+  $('level-title').textContent = `Level ${lvl.level}: ${lvl.title}`;
+  $('level-desc').textContent = lvl.desc;
+  $('level-banner').style.display = 'block';
+  $('progress-wrap').style.display = 'block';
+
+  // Filter questions for this level
+  state.questionPool = allQuestions.filter(q => {
+    const factMatch = lvl.facts.includes(q.attribute);
+    // Select-all questions only in levels that opt in
+    if (q.isSelectAll) {
+      return factMatch && lvl.includeSelectAll;
+    }
+    if (q.isValueQuestion) {
+      return factMatch && lvl.classes.includes(q.forClass);
+    }
+    // "which class" questions: correct answer must be in active classes
+    return factMatch && lvl.classes.includes(q.correct);
+  });
+
+  updateProgress();
+  nextQuestion();
+}
+
+function nextQuestion() {
+  if (state.levelCorrect >= LEVELS[state.currentLevel].questionsNeeded) {
+    return levelComplete();
+  }
+
+  state.locked = false;
+  const pool = state.questionPool;
+  const q = pool[Math.floor(Math.random() * pool.length)];
+  state.currentQuestion = q;
+
+  // Render question
+  $('fact-label').textContent = q.attribute.replace(/_/g, ' ');
+  $('question-text').textContent = q.text;
+
+  // Wire up "Show Regulation" button
+  $('reg-text').style.display = 'none';
+  $('show-reg-btn').textContent = 'Show Regulation';
+  const refClass = q.isValueQuestion ? q.forClass : (q.isSelectAll ? q.correctSet?.[0] : q.correct);
+  const ref = CFR_REFS[refClass]?.[q.attribute];
+  if (ref) {
+    $('reg-ref').style.display = 'block';
+    $('show-reg-btn').onclick = () => {
+      const showing = $('reg-text').style.display !== 'none';
+      $('reg-text').style.display = showing ? 'none' : 'block';
+      $('show-reg-btn').textContent = showing ? 'Show Regulation' : 'Hide Regulation';
+      $('reg-cite').textContent = ref.cfr;
+      $('reg-body').textContent = ref.text;
+      $('reg-link').href = ref.url;
+    };
+  } else {
+    $('reg-ref').style.display = 'none';
+  }
+
+  // Render buttons
+  const answersEl = $('answers');
+  answersEl.innerHTML = '';
+  const lvl = LEVELS[state.currentLevel];
+
+  const chartLabels = {
+    A: 'Not on chart', B: 'Solid Blue', C: 'Solid Magenta',
+    D: 'Dashed Blue', E: 'Faded Magenta', G: 'Unmarked'
+  };
+
+  // Hide multi-select submit by default
+  $('submit-multi').style.display = 'none';
+  state.selectedClasses = new Set();
+
+  if (q.isSelectAll) {
+    // SELECT-ALL question: color-matched buttons that toggle, plus submit
+    $('submit-multi').style.display = 'block';
+    $('submit-multi').disabled = true;
+
+    q.options.forEach(cls => {
+      const btn = document.createElement('button');
+      btn.className = `answer-btn class-${cls}`;
+      btn.innerHTML = `Class ${cls}<span class="btn-label">${chartLabels[cls]}</span>`;
+      btn.dataset.cls = cls;
+      btn.onclick = () => {
+        if (state.locked) return;
+        if (state.selectedClasses.has(cls)) {
+          state.selectedClasses.delete(cls);
+          btn.classList.remove('selected-toggle');
+        } else {
+          state.selectedClasses.add(cls);
+          btn.classList.add('selected-toggle');
+        }
+        $('submit-multi').disabled = state.selectedClasses.size === 0;
+      };
+      answersEl.appendChild(btn);
+    });
+
+    $('submit-multi').onclick = () => handleSelectAllAnswer();
+
+  } else if (q.isValueQuestion) {
+    // Show class badge with chart color for reinforcement
+    const cls = q.forClass;
+    const badge = document.createElement('div');
+    badge.className = `answer-btn class-${cls}`;
+    badge.style.pointerEvents = 'none';
+    badge.style.marginBottom = '8px';
+    badge.style.padding = '8px 12px';
+    badge.style.textAlign = 'center';
+    badge.style.gridColumn = '1 / -1';
+    badge.innerHTML = `Class ${cls}<span class="btn-label">${chartLabels[cls]}</span>`;
+    answersEl.appendChild(badge);
+
+    // Limit to 3 options for levels 1-4
+    let opts = [...q.options];
+    const maxOpts = lvl.level <= 4 ? 3 : opts.length;
+    if (opts.length > maxOpts) {
+      // Keep correct, trim distractors
+      const correct = opts.find(o => o.value === q.correct);
+      const distractors = opts.filter(o => o.value !== q.correct).sort(() => Math.random() - 0.5).slice(0, maxOpts - 1);
+      opts = [correct, ...distractors].sort(() => Math.random() - 0.5);
+    }
+
+    opts.forEach(opt => {
+      const btn = document.createElement('button');
+      btn.className = 'answer-btn';
+      btn.style.background = '#1e2740';
+      btn.style.border = '2px solid #2a3450';
+      btn.style.color = '#e0e0e0';
+      btn.textContent = opt.label;
+      btn.onclick = () => handleAnswer(opt.value === q.correct, q.correct);
+      answersEl.appendChild(btn);
+    });
+  } else {
+    // Class-type question: show color-matched class buttons
+    let options = q.options.filter(c => lvl.classes.includes(c));
+    // Ensure correct answer is present
+    if (!options.includes(q.correct)) options.push(q.correct);
+    // Limit to 3 for levels 1-4
+    const maxOpts = lvl.level <= 4 ? 3 : 6;
+    if (options.length > maxOpts) {
+      const distractors = options.filter(c => c !== q.correct).sort(() => Math.random() - 0.5).slice(0, maxOpts - 1);
+      options = [q.correct, ...distractors];
+    }
+    // Ensure we have at least 2 options
+    while (options.length < 2) {
+      const extra = lvl.classes.find(c => !options.includes(c));
+      if (extra) options.push(extra); else break;
+    }
+    const shuffled = options.sort(() => Math.random() - 0.5);
+
+    shuffled.forEach(cls => {
+      const btn = document.createElement('button');
+      btn.className = `answer-btn class-${cls}`;
+      btn.innerHTML = `Class ${cls}<span class="btn-label">${chartLabels[cls]}</span>`;
+      btn.onclick = () => handleAnswer(cls === q.correct, q.correct);
+      answersEl.appendChild(btn);
+    });
+  }
+}
+
+function handleAnswer(isCorrect, correctAnswer) {
+  if (state.locked) return;
+  state.locked = true;
+
+  if (isCorrect) {
+    state.correct++;
+    state.levelCorrect++;
+    state.streak++;
+    if (state.streak > state.bestStreak) state.bestStreak = state.streak;
+
+    // Scoring with streak multiplier
+    let points = 10;
+    let bonusText = '';
+    const multiplier = Math.min(state.streak, 5);
+    points *= multiplier;
+
+    // Variable bonus (20% chance)
+    if (Math.random() < 0.2) {
+      const bonusAmt = [15, 25, 50][Math.floor(Math.random() * 3)];
+      points += bonusAmt;
+      bonusText = `+${bonusAmt} BONUS!`;
+      playBonus();
+    } else {
+      playCorrect();
+    }
+
+    state.score += points;
+    $('score').textContent = state.score;
+    $('streak').textContent = state.streak;
+    $('bonus').textContent = bonusText || (multiplier > 1 ? `×${multiplier}` : '');
+
+    // Record mastery
+    const q = state.currentQuestion;
+    const cls = q.isValueQuestion ? q.forClass : q.correct;
+    recordAnswer(cls, q.attribute, true);
+
+    showFeedback(true, `+${points}`, bonusText, null);
+    confetti({ particleCount: 30 + state.streak * 10, spread: 60, origin: { y: 0.7 }, colors: currentTheme.confettiColors });
+
+  } else {
+    state.wrong++;
+    state.levelWrong++;
+    state.streak = 0;
+    $('streak').textContent = '0';
+    $('bonus').textContent = '';
+
+    playWrong();
+    $('question-card').classList.add('shake');
+    setTimeout(() => $('question-card').classList.remove('shake'), 400);
+
+    // Record mastery
+    const q = state.currentQuestion;
+    const cls = q.isValueQuestion ? q.forClass : q.correct;
+    recordAnswer(cls, q.attribute, false);
+
+    const correctLabel = AIRSPACE[correctAnswer]
+      ? AIRSPACE[correctAnswer].name
+      : correctAnswer;
+    showFeedback(false, 'Not quite', '', correctLabel);
+  }
+
+  updateProgress();
+  setTimeout(nextQuestion, isCorrect ? 1200 : 2000);
+}
+
+function handleSelectAllAnswer() {
+  if (state.locked) return;
+  state.locked = true;
+
+  const q = state.currentQuestion;
+  const selected = state.selectedClasses;
+  const correctSet = new Set(q.correctSet);
+
+  // Check if sets match exactly
+  const isCorrect = selected.size === correctSet.size &&
+    [...selected].every(c => correctSet.has(c));
+
+  // Highlight correct/wrong on buttons
+  document.querySelectorAll('#answers .answer-btn').forEach(btn => {
+    const cls = btn.dataset.cls;
+    if (correctSet.has(cls)) {
+      btn.style.outline = '3px solid var(--accent)';
+      btn.style.outlineOffset = '2px';
+    } else if (selected.has(cls)) {
+      btn.style.outline = '3px solid #ff5252';
+      btn.style.outlineOffset = '2px';
+    }
+  });
+
+  $('submit-multi').style.display = 'none';
+
+  if (isCorrect) {
+    state.correct++;
+    state.levelCorrect++;
+    state.streak++;
+    if (state.streak > state.bestStreak) state.bestStreak = state.streak;
+
+    // Select-all worth more points (15 base)
+    let points = 15;
+    let bonusText = '';
+    const multiplier = Math.min(state.streak, 5);
+    points *= multiplier;
+
+    if (Math.random() < 0.25) {
+      const bonusAmt = [20, 35, 75][Math.floor(Math.random() * 3)];
+      points += bonusAmt;
+      bonusText = `+${bonusAmt} BONUS!`;
+      playBonus();
+    } else {
+      playCorrect();
+    }
+
+    state.score += points;
+    $('score').textContent = state.score;
+    $('streak').textContent = state.streak;
+    $('bonus').textContent = bonusText || (multiplier > 1 ? `×${multiplier}` : '');
+
+    // Record mastery for each correct class
+    q.correctSet.forEach(cls => recordAnswer(cls, q.attribute, true));
+
+    showFeedback(true, `+${points}`, bonusText, null);
+    confetti({ particleCount: 50 + state.streak * 10, spread: 80, origin: { y: 0.7 }, colors: currentTheme.confettiColors });
+
+  } else {
+    state.wrong++;
+    state.levelWrong++;
+    state.streak = 0;
+    $('streak').textContent = '0';
+    $('bonus').textContent = '';
+
+    playWrong();
+    $('question-card').classList.add('shake');
+    setTimeout(() => $('question-card').classList.remove('shake'), 400);
+
+    // Record mastery — missed classes as wrong, extras as wrong
+    const missed = [...correctSet].filter(c => !selected.has(c));
+    const extras = [...selected].filter(c => !correctSet.has(c));
+    missed.forEach(cls => recordAnswer(cls, q.attribute, false));
+    extras.forEach(cls => recordAnswer(cls, q.attribute, false));
+
+    const correctLabel = q.correctSet.map(c => `Class ${c}`).join(', ');
+    showFeedback(false, 'Not quite', '', correctLabel);
+  }
+
+  updateProgress();
+  setTimeout(nextQuestion, isCorrect ? 1500 : 2500);
+}
+
+function showFeedback(correct, text, bonus, detail) {
+  const fb = $('feedback');
+  const inner = $('feedback-inner');
+  inner.className = 'feedback-inner ' + (correct ? 'correct' : 'wrong');
+  $('feedback-icon').textContent = correct ? currentTheme.correctEmoji : currentTheme.wrongEmoji;
+  $('feedback-icon').style.color = correct ? 'var(--accent)' : '#ff5252';
+  $('feedback-text').textContent = text;
+  $('feedback-bonus').textContent = bonus || '';
+  $('feedback-detail').textContent = detail ? `Correct answer: ${detail}` : '';
+  fb.classList.add('show');
+  setTimeout(() => fb.classList.remove('show'), correct ? 1000 : 1800);
+}
+
+function updateProgress() {
+  const lvl = LEVELS[state.currentLevel];
+  const pct = Math.min(100, (state.levelCorrect / lvl.questionsNeeded) * 100);
+  $('progress-fill').style.width = pct + '%';
+  $('progress-label').textContent = `${state.levelCorrect} / ${lvl.questionsNeeded} correct to advance`;
+}
+
+function levelComplete() {
+  $('question-card').style.display = 'none';
+  $('answers').style.display = 'none';
+  $('level-banner').style.display = 'none';
+  $('progress-wrap').style.display = 'none';
+
+  playLevelUp();
+  confetti({ particleCount: 150, spread: 100, origin: { y: 0.6 }, colors: currentTheme.confettiColors });
+
+  const lvl = LEVELS[state.currentLevel];
+  const accuracy = Math.round((state.levelCorrect / (state.levelCorrect + state.levelWrong)) * 100);
+
+  $('complete-title').textContent = state.currentLevel < LEVELS.length - 1
+    ? `Level ${lvl.level} Complete!`
+    : 'All Levels Complete!';
+
+  // Record session mastery + player profile
+  recordSession(lvl.level, state.score, state.levelCorrect, state.levelWrong, state.bestStreak);
+  updatePlayerProfile();
+
+  // Build mastery breakdown for active classes
+  const masteryLines = lvl.classes.map(c => `Class ${c}: ${getMasteryPct(c)}%`).join('<br>');
+
+  $('complete-stats').innerHTML =
+    `Accuracy: ${accuracy}%<br>` +
+    `Score: ${state.score}<br>` +
+    `Best Streak: ${state.bestStreak}<br><br>` +
+    `<strong>Mastery by Class:</strong><br>${masteryLines}`;
+
+  const nextBtn = $('next-btn');
+  if (state.currentLevel < LEVELS.length - 1) {
+    nextBtn.textContent = `Start Level ${LEVELS[state.currentLevel + 1].level}`;
+    nextBtn.onclick = () => loadLevel(state.currentLevel + 1);
+  } else {
+    nextBtn.textContent = 'Play Again from Level 1';
+    nextBtn.onclick = () => {
+      state.score = 0;
+      state.streak = 0;
+      state.bestStreak = 0;
+      state.correct = 0;
+      state.wrong = 0;
+      $('score').textContent = '0';
+      $('streak').textContent = '0';
+      loadLevel(0);
+    };
+  }
+
+  $('level-complete').style.display = 'block';
+}
+
+// ============================================================
+// AVATAR SYSTEM — DiceBear Adventurer API
+// ============================================================
+// ============================================================
+// THEME SYSTEM — unlockable visual themes
+// ============================================================
+const THEMES = [
+  {
+    id: 'pilot', name: 'Pilot Mode', icon: '✈️', pointsNeeded: 0,
+    bg: '#0a0e1a', card: '#141b2d', text: '#e0e0e0', accent: '#64ffda',
+    title: '✈️ Airspace Quiz', subtitle: 'Learning Looper — Tap the correct airspace class',
+    correctEmoji: '✓', wrongEmoji: '✗',
+    confettiColors: undefined
+  },
+  {
+    id: 'cupcake', name: 'Bakery Mode', icon: '🧁', pointsNeeded: 100,
+    bg: '#fff0f5', card: '#fff8fa', text: '#4a2040', accent: '#ff69b4',
+    title: '🧁 Airspace Quiz 🧁', subtitle: 'Bake your way through the skies! 🎂',
+    correctEmoji: '🧁', wrongEmoji: '🥺',
+    confettiColors: ['#ff69b4', '#ffb6c1', '#ff1493', '#fff0f5', '#ffc0cb']
+  },
+  {
+    id: 'kawaii', name: 'Kawaii Mode', icon: '🌸', pointsNeeded: 400,
+    bg: '#fef0ff', card: '#fff5fe', text: '#5b2065', accent: '#e040fb',
+    title: '🌸 Airspace Quiz 🌸', subtitle: 'Sugoi! Fly through the kawaii skies~ ✨',
+    correctEmoji: '⭐', wrongEmoji: '💔',
+    confettiColors: ['#e040fb', '#ff80ab', '#ea80fc', '#ce93d8', '#f8bbd0']
+  },
+  {
+    id: 'glam', name: 'Glam Mode', icon: '💅', pointsNeeded: 700,
+    bg: '#fff5f5', card: '#fff0f8', text: '#880050', accent: '#ff1493',
+    title: '💅 Airspace Quiz 💅', subtitle: 'Slay the skies, queen! 👑',
+    correctEmoji: '💖', wrongEmoji: '💀',
+    confettiColors: ['#ff1493', '#ff69b4', '#ff00ff', '#ffb7ce', '#ff85a2']
+  },
+  {
+    id: 'warrior', name: 'Warrior Mode', icon: '⚔️', pointsNeeded: 1000,
+    bg: '#1a0a00', card: '#2d1a0a', text: '#ffd700', accent: '#ff8c00',
+    title: '⚔️ AIRSPACE CONQUEST ⚔️', subtitle: 'BY THE POWER OF AVIATION!',
+    correctEmoji: '⚔️', wrongEmoji: '💀',
+    confettiColors: ['#ff8c00', '#ffd700', '#ff4500', '#8b0000', '#daa520']
+  },
+  {
+    id: 'anime', name: 'Anime Mode', icon: '🔥', pointsNeeded: 1500,
+    bg: '#0a001a', card: '#1a0a2d', text: '#00ffff', accent: '#ff4500',
+    title: '🔥 AIRSPACE QUIZ 🔥', subtitle: 'This isn\'t even my final form! ⚡',
+    correctEmoji: '🔥', wrongEmoji: '😤',
+    confettiColors: ['#ff4500', '#ff6347', '#00ffff', '#7b68ee', '#ff1493']
+  },
+  {
+    id: 'retro', name: 'Arcade Mode', icon: '👾', pointsNeeded: 2000,
+    bg: '#000000', card: '#111111', text: '#00ff00', accent: '#00ff00',
+    title: '👾 AIRSPACE.EXE 👾', subtitle: 'INSERT COIN TO CONTINUE...',
+    correctEmoji: '█', wrongEmoji: '☠',
+    confettiColors: ['#00ff00', '#00cc00', '#009900', '#33ff33', '#66ff66']
+  },
+  {
+    id: 'space', name: 'Space Mode', icon: '🚀', pointsNeeded: 3000,
+    bg: '#05001a', card: '#0a0025', text: '#c8d8ff', accent: '#7b68ee',
+    title: '🚀 ORBITAL QUIZ 🚀', subtitle: 'Houston, we have questions...',
+    correctEmoji: '🌟', wrongEmoji: '☄️',
+    confettiColors: ['#7b68ee', '#6a5acd', '#483d8b', '#9370db', '#ba55d3']
+  },
+];
+
+let currentTheme = THEMES[0];
+
+function applyTheme(theme) {
+  currentTheme = theme;
+  document.documentElement.style.setProperty('--bg', theme.bg);
+  document.documentElement.style.setProperty('--card', theme.card);
+  document.documentElement.style.setProperty('--text', theme.text);
+  document.documentElement.style.setProperty('--accent', theme.accent);
+  $('game-title').textContent = theme.title;
+  $('game-subtitle').textContent = theme.subtitle;
+  // Update feedback bar & other elements that use hardcoded dark colors
+  document.querySelectorAll('.feedback-bar').forEach(el => {
+    el.style.background = theme.card;
+    el.style.borderTopColor = theme.accent + '44';
+  });
+}
+
+function getUnlockedThemes(totalScore) {
+  return THEMES.filter(t => totalScore >= t.pointsNeeded);
+}
+
+function renderThemePicker() {
+  const picker = $('theme-picker');
+  if (!picker) return;
+  const profile = profiles[loadCurrentPlayer()] || {};
+  const totalScore = profile.bestScore || 0;
+  const currentId = state.selectedTheme || profile.theme || 'pilot';
+  picker.innerHTML = '';
+
+  THEMES.forEach(t => {
+    const unlocked = totalScore >= t.pointsNeeded;
+    const selected = t.id === currentId;
+    const btn = document.createElement('span');
+    btn.className = 'unlockable-item ' + (unlocked ? 'unlocked' : 'locked');
+    btn.style.cursor = unlocked ? 'pointer' : 'default';
+    btn.style.fontSize = '0.8rem';
+    btn.style.padding = '4px 10px';
+    if (selected && unlocked) {
+      btn.style.outline = '2px solid var(--accent)';
+      btn.style.outlineOffset = '1px';
+    }
+    btn.textContent = unlocked ? `${t.icon} ${t.name}` : `${t.icon} ${t.name} (${t.pointsNeeded} pts)`;
+    if (unlocked) {
+      btn.onclick = () => {
+        state.selectedTheme = t.id;
+        applyTheme(t);
+        const name = $('player-name').value.trim();
+        if (name && profiles[name]) { profiles[name].theme = t.id; saveProfiles(); }
+        renderThemePicker();
+      };
+    }
+    picker.appendChild(btn);
+  });
+}
+
+const AVATAR_BASE = 'https://api.dicebear.com/9.x/adventurer/svg';
+
+const AVATAR_PRESETS = {
+  boy: [
+    { hair: 'short01', skinColor: 'f2d3b1', eyes: 'variant01', mouth: 'variant01', eyebrows: 'variant01' },
+    { hair: 'short02', skinColor: 'ecad80', eyes: 'variant02', mouth: 'variant02', eyebrows: 'variant02' },
+    { hair: 'short04', skinColor: '9e5622', eyes: 'variant04', mouth: 'variant05', eyebrows: 'variant04' },
+    { hair: 'short05', skinColor: 'f2d3b1', eyes: 'variant06', mouth: 'variant08', eyebrows: 'variant06' },
+    { hair: 'short07', skinColor: '763900', eyes: 'variant09', mouth: 'variant10', eyebrows: 'variant09' },
+    { hair: 'short10', skinColor: 'ecad80', eyes: 'variant12', mouth: 'variant14', eyebrows: 'variant12' },
+  ],
+  girl: [
+    { hair: 'long01', skinColor: 'f2d3b1', eyes: 'variant03', mouth: 'variant03', eyebrows: 'variant03' },
+    { hair: 'long02', skinColor: 'ecad80', eyes: 'variant05', mouth: 'variant06', eyebrows: 'variant05' },
+    { hair: 'long04', skinColor: '9e5622', eyes: 'variant07', mouth: 'variant09', eyebrows: 'variant07' },
+    { hair: 'long06', skinColor: 'f2d3b1', eyes: 'variant10', mouth: 'variant12', eyebrows: 'variant10' },
+    { hair: 'long10', skinColor: '763900', eyes: 'variant13', mouth: 'variant15', eyebrows: 'variant13' },
+    { hair: 'long15', skinColor: 'ecad80', eyes: 'variant15', mouth: 'variant17', eyebrows: 'variant15' },
+  ]
+};
+
+const AVATAR_UNLOCKS = [
+  { id: 'none',       name: 'None',          pointsNeeded: 0,    overrides: {} },
+  { id: 'glasses',    name: 'Glasses',       pointsNeeded: 300,  overrides: { glasses: 'variant01', glassesProbability: 100 } },
+  { id: 'earrings',   name: 'Earrings',      pointsNeeded: 800,  overrides: { earrings: 'variant01', earringsProbability: 100 } },
+  { id: 'freckles',   name: 'Freckles',      pointsNeeded: 1500, overrides: { features: 'freckles', featuresProbability: 100 } },
+  { id: 'mustache',   name: 'Mustache',      pointsNeeded: 3000, overrides: { features: 'mustache', featuresProbability: 100 } },
+  { id: 'blush',      name: 'Blush',         pointsNeeded: 5000, overrides: { features: 'blush', featuresProbability: 100 } },
+];
+
+function buildAvatarURL(gender, presetIdx, unlockId) {
+  const presets = AVATAR_PRESETS[gender] || AVATAR_PRESETS.boy;
+  const p = presets[presetIdx % presets.length];
+  const unlock = AVATAR_UNLOCKS.find(u => u.id === unlockId) || AVATAR_UNLOCKS[0];
+  // Build params object — unlock overrides replace defaults
+  const params = {
+    hair: p.hair, skinColor: p.skinColor, eyes: p.eyes, mouth: p.mouth, eyebrows: p.eyebrows,
+    earringsProbability: 0, glassesProbability: 0, featuresProbability: 0,
+    backgroundColor: '1e2740', radius: 50,
+    ...unlock.overrides
+  };
+  const qs = Object.entries(params).map(([k, v]) => `${k}=${v}`).join('&');
+  return `${AVATAR_BASE}?${qs}`;
+}
+
+// Convenience for leaderboard/HUD — returns an <img> tag string
+function buildAvatarImg(gender, presetIdx, unlockId, size) {
+  return `<img src="${buildAvatarURL(gender, presetIdx, unlockId)}" width="${size}" height="${size}" style="border-radius:50%; background:#1e2740;">`;
+}
+
+function getUnlockedAccessories(totalScore) {
+  return AVATAR_UNLOCKS.filter(a => totalScore >= a.pointsNeeded);
+}
+
+function renderAvatarPicker() {
+  const profile = profiles[loadCurrentPlayer()] || {};
+  const totalScore = profile.bestScore || 0;
+  state.avatarGender = state.avatarGender ?? profile.avatarGender ?? 'boy';
+  state.avatarPreset = state.avatarPreset ?? profile.avatarPreset ?? 0;
+  state.selectedAccessory = state.selectedAccessory ?? profile.accessory ?? 'none';
+
+  // Update avatar image
+  const avatarEl = $('start-avatar');
+  avatarEl.src = buildAvatarURL(state.avatarGender, state.avatarPreset, state.selectedAccessory);
+
+  // Highlight active gender button
+  $('avatar-boy').style.opacity = state.avatarGender === 'boy' ? '1' : '0.4';
+  $('avatar-girl').style.opacity = state.avatarGender === 'girl' ? '1' : '0.4';
+
+  // Show unlockable accessories — click to equip
+  const unlockDiv = $('unlockables-display');
+  unlockDiv.innerHTML = '';
+  AVATAR_UNLOCKS.forEach(acc => {
+    if (acc.id === 'none') return;
+    const isUnlocked = totalScore >= acc.pointsNeeded;
+    const isSelected = acc.id === state.selectedAccessory;
+    const item = document.createElement('span');
+    item.className = 'unlockable-item ' + (isUnlocked ? 'unlocked' : 'locked');
+    item.textContent = isUnlocked ? (isSelected ? `[${acc.name}]` : acc.name) : `${acc.name} (${acc.pointsNeeded} pts)`;
+    item.style.cursor = isUnlocked ? 'pointer' : 'default';
+    if (isUnlocked) {
+      item.onclick = () => {
+        state.selectedAccessory = state.selectedAccessory === acc.id ? 'none' : acc.id;
+        saveAvatarToProfile();
+        renderAvatarPicker();
+      };
+    }
+    unlockDiv.appendChild(item);
+  });
+}
+
+function saveAvatarToProfile() {
+  const name = $('player-name').value.trim();
+  if (name && profiles[name]) {
+    profiles[name].avatarGender = state.avatarGender;
+    profiles[name].avatarPreset = state.avatarPreset;
+    profiles[name].accessory = state.selectedAccessory;
+    saveProfiles();
+  }
+}
+
+// ============================================================
+// PLAYER PROFILES & LEADERBOARD (localStorage)
+// ============================================================
+const PROFILES_KEY = 'learning-looper-profiles';
+const CURRENT_PLAYER_KEY = 'learning-looper-current-player';
+
+function loadProfiles() {
+  try {
+    const raw = localStorage.getItem(PROFILES_KEY);
+    if (raw) return JSON.parse(raw);
+  } catch (e) {}
+  return {};
+}
+
+function saveProfiles() {
+  try { localStorage.setItem(PROFILES_KEY, JSON.stringify(profiles)); } catch (e) {}
+}
+
+function saveCurrentPlayer(name) {
+  try { localStorage.setItem(CURRENT_PLAYER_KEY, name); } catch (e) {}
+}
+
+function loadCurrentPlayer() {
+  try { return localStorage.getItem(CURRENT_PLAYER_KEY) || ''; } catch (e) { return ''; }
+}
+
+let profiles = loadProfiles();
+
+function updatePlayerProfile() {
+  const name = state.playerName;
+  if (!name) return;
+  const existing = profiles[name] || { bestScore: 0, bestStreak: 0, highestLevel: 0, gamesPlayed: 0, lastPlayed: null, faceColor: 0, accessory: 'none' };
+  existing.bestScore = Math.max(existing.bestScore, state.score);
+  existing.bestStreak = Math.max(existing.bestStreak, state.bestStreak);
+  existing.highestLevel = Math.max(existing.highestLevel, LEVELS[state.currentLevel].level);
+  existing.gamesPlayed = (existing.gamesPlayed || 0) + 1;
+  existing.lastPlayed = new Date().toISOString();
+  existing.avatarGender = state.avatarGender ?? existing.avatarGender ?? 'boy';
+  existing.avatarPreset = state.avatarPreset ?? existing.avatarPreset ?? 0;
+  existing.accessory = state.selectedAccessory ?? existing.accessory ?? 'none';
+  // Check for new unlocks
+  const newUnlocks = getUnlockedAccessories(existing.bestScore);
+  const prevUnlocks = getUnlockedAccessories(existing.bestScore - state.score);
+  if (newUnlocks.length > prevUnlocks.length) {
+    const newest = newUnlocks[newUnlocks.length - 1];
+    existing.accessory = newest.id;
+    state.selectedAccessory = newest.id;
+  }
+  profiles[name] = existing;
+  saveProfiles();
+  updateHudAvatar();
+}
+
+function renderLeaderboard(targetId) {
+  const list = Object.entries(profiles)
+    .map(([name, p]) => ({ name, ...p }))
+    .sort((a, b) => b.bestScore - a.bestScore);
+
+  const container = $(targetId || 'leaderboard-list');
+  if (!container) return;
+  if (list.length === 0) {
+    container.innerHTML = '<p style="text-align:center; color:#888;">No scores yet — be the first!</p>';
+    return;
+  }
+
+  const medals = ['🥇', '🥈', '🥉'];
+  container.innerHTML = list.map((p, i) => `
+    <div class="lb-entry" data-player="${p.name}" style="display:flex; align-items:center; justify-content:space-between;
+                padding:12px 16px; margin-bottom:8px; border-radius:10px; cursor:pointer;
+                background:${i === 0 ? '#1a2a1a' : 'var(--card)'}; border:1px solid ${i === 0 ? '#2a4a2a' : '#2a3450'}; transition: outline 0.2s;"
+                onmouseover="this.style.outline='2px solid var(--accent)'" onmouseout="this.style.outline='none'">
+      <div style="display:flex; align-items:center; gap:10px;">
+        <span style="font-size:1.2rem;">${medals[i] || `#${i+1}`}</span>
+        ${buildAvatarImg(p.avatarGender || 'boy', p.avatarPreset || 0, p.accessory || 'none', 36)}
+        <strong>${p.name}</strong>
+      </div>
+      <div style="text-align:right; font-size:0.85rem;">
+        <div style="color:var(--accent); font-weight:bold; font-size:1.1rem;">${p.bestScore}</div>
+        <div style="color:#888;">Level ${p.highestLevel} · Streak ${p.bestStreak}</div>
+      </div>
+    </div>
+  `).join('');
+
+  // Click a player to log in as them
+  container.querySelectorAll('.lb-entry').forEach(el => {
+    el.onclick = () => {
+      const name = el.dataset.player;
+      $('player-name').value = name;
+      const p = profiles[name];
+      if (p) {
+        state.avatarGender = p.avatarGender ?? 'boy';
+        state.avatarPreset = p.avatarPreset ?? 0;
+        state.selectedAccessory = p.accessory || 'none';
+      }
+      const th = THEMES.find(t => t.id === p?.theme);
+      if (th) { state.selectedTheme = th.id; applyTheme(th); }
+      renderAvatarPicker();
+      renderThemePicker();
+      updateStartButton();
+      $('player-name').style.borderColor = 'var(--accent)';
+      setTimeout(() => { $('player-name').style.borderColor = '#2a3450'; }, 1500);
+    };
+  });
+}
+
+// ============================================================
+// HUD AVATAR + LOGOUT
+// ============================================================
+function updateHudAvatar() {
+  const g = state.avatarGender || 'boy';
+  const p = state.avatarPreset || 0;
+  const acc = state.selectedAccessory || 'none';
+  $('hud-avatar').innerHTML = buildAvatarImg(g, p, acc, 48);
+  $('hud-player-name').textContent = state.playerName || '';
+}
+
+function logout() {
+  // Hide game UI, show start screen
+  $('hud').style.display = 'none';
+  $('player-bar').style.display = 'none';
+  $('level-banner').style.display = 'none';
+  $('progress-wrap').style.display = 'none';
+  $('question-card').style.display = 'none';
+  $('answers').style.display = 'none';
+  $('level-complete').style.display = 'none';
+  $('start-screen').style.display = 'block';
+  // Reset game state but keep profiles
+  state.score = 0;
+  state.streak = 0;
+  state.bestStreak = 0;
+  state.correct = 0;
+  state.wrong = 0;
+  state.playerName = '';
+  $('score').textContent = '0';
+  $('streak').textContent = '0';
+  $('player-name').value = '';
+  $('player-name').focus();
+  state.selectedTheme = 'pilot';
+  applyTheme(THEMES[0]);
+  renderAvatarPicker();
+  renderThemePicker();
+  renderLeaderboard('home-leaderboard');
+}
+
+// ============================================================
+// INIT
+// ============================================================
+// Restore last player name
+$('player-name').value = loadCurrentPlayer();
+
+$('player-name').addEventListener('input', () => {
+  $('player-name').style.borderColor = '#2a3450';
+  const name = $('player-name').value.trim();
+  if (profiles[name]) {
+    state.avatarGender = profiles[name].avatarGender ?? 'boy';
+    state.avatarPreset = profiles[name].avatarPreset ?? 0;
+    state.selectedAccessory = profiles[name].accessory || 'none';
+    const t = THEMES.find(th => th.id === profiles[name].theme);
+    if (t) { state.selectedTheme = t.id; applyTheme(t); }
+  }
+  renderAvatarPicker();
+  renderThemePicker();
+});
+
+$('avatar-boy').onclick = () => {
+  state.avatarGender = 'boy';
+  state.avatarPreset = 0;
+  saveAvatarToProfile();
+  renderAvatarPicker();
+};
+$('avatar-girl').onclick = () => {
+  state.avatarGender = 'girl';
+  state.avatarPreset = 0;
+  saveAvatarToProfile();
+  renderAvatarPicker();
+};
+$('avatar-prev').onclick = () => {
+  const presets = AVATAR_PRESETS[state.avatarGender || 'boy'];
+  state.avatarPreset = ((state.avatarPreset || 0) - 1 + presets.length) % presets.length;
+  saveAvatarToProfile();
+  renderAvatarPicker();
+};
+$('avatar-next').onclick = () => {
+  const presets = AVATAR_PRESETS[state.avatarGender || 'boy'];
+  state.avatarPreset = ((state.avatarPreset || 0) + 1) % presets.length;
+  saveAvatarToProfile();
+  renderAvatarPicker();
+};
+
+$('start-btn').onclick = () => {
+  const name = $('player-name').value.trim();
+  if (!name) {
+    $('player-name').style.borderColor = '#ff5252';
+    $('player-name').focus();
+    return;
+  }
+  state.playerName = name;
+  saveCurrentPlayer(name);
+  // Initialize profile if new
+  if (!profiles[name]) {
+    profiles[name] = { bestScore: 0, bestStreak: 0, highestLevel: 0, gamesPlayed: 0, lastPlayed: null, avatarGender: state.avatarGender || 'boy', avatarPreset: state.avatarPreset || 0, accessory: state.selectedAccessory || 'none' };
+    saveProfiles();
+  } else {
+    profiles[name].avatarGender = state.avatarGender ?? profiles[name].avatarGender ?? 'boy';
+    profiles[name].avatarPreset = state.avatarPreset ?? profiles[name].avatarPreset ?? 0;
+    profiles[name].accessory = state.selectedAccessory ?? profiles[name].accessory ?? 'none';
+    saveProfiles();
+  }
+  $('player-bar').style.display = 'flex';
+  updateHudAvatar();
+  audioCtx.resume();
+  startGame();
+};
+
+// Update start button label when player name changes
+function updateStartButton() {
+  const name = $('player-name').value.trim();
+  const profile = profiles[name];
+  if (profile && profile.highestLevel > 0) {
+    const lvl = Math.min(profile.highestLevel, LEVELS.length - 1);
+    $('start-btn').textContent = `Continue Level ${LEVELS[lvl].level}`;
+  } else {
+    $('start-btn').textContent = 'Start Level 1';
+  }
+}
+$('player-name').addEventListener('input', () => { updateStartButton(); });
+
+$('logout-btn').onclick = logout;
+
+// Leaderboard is now inline on home screen — no separate screen needed
+
+// Initialize avatar picker, theme picker, and home leaderboard on load
+renderAvatarPicker();
+renderThemePicker();
+renderLeaderboard('home-leaderboard');
+// Apply saved theme
+const savedPlayer = loadCurrentPlayer();
+if (savedPlayer && profiles[savedPlayer]?.theme) {
+  const t = THEMES.find(th => th.id === profiles[savedPlayer].theme);
+  if (t) { state.selectedTheme = t.id; applyTheme(t); }
+}
+
+// ============================================================
+// FEEDBACK BAR — saves notes + game state to a log file
+// ============================================================
+const FEEDBACK_KEY = 'learning-looper-feedback-log';
+
+function loadFeedbackLog() {
+  try {
+    const raw = localStorage.getItem(FEEDBACK_KEY);
+    if (raw) return JSON.parse(raw);
+  } catch (e) {}
+  return [];
+}
+
+function saveFeedbackLog(log) {
+  try { localStorage.setItem(FEEDBACK_KEY, JSON.stringify(log)); } catch (e) {}
+}
+
+function getGameSnapshot() {
+  const q = state.currentQuestion;
+  return {
+    player: state.playerName || 'unknown',
+    level: state.currentLevel != null ? LEVELS[state.currentLevel]?.level : null,
+    levelTitle: state.currentLevel != null ? LEVELS[state.currentLevel]?.title : null,
+    score: state.score,
+    streak: state.streak,
+    levelCorrect: state.levelCorrect,
+    levelWrong: state.levelWrong,
+    question: q ? {
+      type: q.isSelectAll ? 'select_all' : q.isValueQuestion ? 'what_is' : 'which_class',
+      text: q.text,
+      attribute: q.attribute,
+      correct: q.correct || q.correctSet || null,
+      forClass: q.forClass || null
+    } : null
+  };
+}
+
+function submitFeedback() {
+  const input = $('fb-input');
+  const note = input.value.trim();
+  if (!note) return;
+
+  const entry = {
+    timestamp: new Date().toISOString(),
+    note: note,
+    gameState: getGameSnapshot(),
+    userAgent: navigator.userAgent
+  };
+
+  const log = loadFeedbackLog();
+  log.push(entry);
+  saveFeedbackLog(log);
+
+  // Saved to localStorage only — no server calls
+
+  input.value = '';
+  input.placeholder = 'Note saved! Enter another...';
+  input.style.borderColor = '#4caf50';
+  $('fb-status').textContent = `Logged #${log.length}`;
+  $('fb-status').style.color = '#4caf50';
+  $('fb-count').textContent = `(${log.length} total)`;
+  setTimeout(() => {
+    input.placeholder = 'Note a bug, suggestion, or confusing question...';
+    input.style.borderColor = '#2a3450';
+    $('fb-status').textContent = '';
+    $('fb-status').style.color = '#888';
+  }, 3000);
+}
+
+function exportFeedbackLog() {
+  const log = loadFeedbackLog();
+  if (log.length === 0) { $('fb-status').textContent = 'No notes yet'; return; }
+  const blob = new Blob([JSON.stringify(log, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'feedback-log.json';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  $('fb-status').textContent = 'Exported!';
+  setTimeout(() => { $('fb-status').textContent = ''; }, 2000);
+}
+
+function emailFeedback() {
+  const log = loadFeedbackLog();
+  if (log.length === 0) { $('fb-status').textContent = 'No notes yet'; return; }
+  const body = log.map((entry, i) => {
+    const gs = entry.gameState || {};
+    const q = gs.question || {};
+    return `Note #${i + 1} (${entry.timestamp})\nPlayer: ${gs.player || 'unknown'}\nLevel: ${gs.levelTitle || '?'} | Score: ${gs.score || 0}\nQuestion: ${q.text || 'N/A'}\nNote: ${entry.note}\n`;
+  }).join('\n---\n\n');
+  const subject = encodeURIComponent('Airspace Quiz Feedback');
+  const mailBody = encodeURIComponent(body);
+  window.open(`mailto:?subject=${subject}&body=${mailBody}`);
+}
+
+// Init feedback bar after DOM is ready
+window.addEventListener('DOMContentLoaded', () => {
+  $('fb-count').textContent = `(${loadFeedbackLog().length} notes)`;
+  $('fb-submit').onclick = submitFeedback;
+  $('fb-email').onclick = emailFeedback;
+  $('fb-input').addEventListener('keydown', e => { if (e.key === 'Enter') submitFeedback(); });
+});
+</script>
+
+<!-- Feedback bar -->
+<div class="feedback-bar">
+  <input type="text" id="fb-input" placeholder="Note a bug, suggestion, or confusing question...">
+  <button id="fb-submit">Save Note</button>
+  <button id="fb-email" style="background:#1976D2; color:white; border:none; padding:8px 12px; border-radius:6px; font-size:0.75rem; cursor:pointer; white-space:nowrap;">Email Notes</button>
+  <span class="fb-status" id="fb-status"></span>
+  <span class="fb-count" id="fb-count"></span>
+</div>
+
+</body>
+</html>

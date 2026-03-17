@@ -17,6 +17,18 @@ config.local.json
 .claude/projects/
 *.jsonl
 
+# Feedback log (personal data)
+data/feedback-log.json
+
+# Playwright artifacts
+.playwright-mcp/
+
+# Crash dumps
+*.stackdump
+
+# Server (local dev only)
+game/server.py
+
 # OS files
 Thumbs.db
 Desktop.ini

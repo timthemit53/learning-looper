@@ -1,0 +1,56 @@
+{
+  "domain": "Dual Coding Theory & Color-Based Visual Encoding",
+  "purpose": "Justify color-matched UI in Learning Looper game — airspace class buttons match sectional chart depiction",
+  "last_verified": "2026-03-16",
+  "sources": [
+    {
+      "title": "The Influence of Colour on Memory Performance: A Review",
+      "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC3743993/",
+      "type": "peer-reviewed"
+    },
+    {
+      "title": "Color Education: Methods of Influence on Memory",
+      "url": "https://www.sciencedirect.com/science/article/pii/S240584402202895X",
+      "type": "peer-reviewed"
+    },
+    {
+      "title": "Dual-Coding Theory (ScienceDirect overview)",
+      "url": "https://www.sciencedirect.com/topics/neuroscience/dual-coding-theory",
+      "type": "peer-reviewed"
+    },
+    {
+      "title": "Chromatic Mnemonics: Boosting Memory with Color Psychology",
+      "url": "https://colorlabs.net/posts/chromatic-mnemonics-boosting-memory-with-color-psychology",
+      "type": "industry"
+    },
+    {
+      "title": "Dual Coding: A Teacher's Guide to Visual Learning",
+      "url": "https://www.structural-learning.com/post/dual-coding-a-teachers-guide",
+      "type": "educational"
+    }
+  ],
+  "key_findings": {
+    "dual_coding_theory": "Paivio (1960s): brain processes verbal and visual information through separate channels. Information encoded in BOTH channels is significantly easier to recall than single-channel encoding.",
+    "color_ranking": "Color-coded text segments ranked #1 out of 7 techniques for activating memory retention (ScienceDirect).",
+    "contrast_effect": "Higher color contrast = more attention = better visibility and encoding of information.",
+    "free_reinforcement": "When UI elements are color-matched to real-world representations (e.g., blue for Class B, magenta for Class C), learners encode the visual association passively during every interaction — even when the question topic is unrelated to chart depiction."
+  },
+  "design_decisions": {
+    "class_button_colors": {
+      "A": { "color": "#666666", "reason": "Not depicted on charts — neutral gray" },
+      "B": { "color": "#0055BF", "reason": "Solid blue — matches sectional chart solid blue lines" },
+      "C": { "color": "#C2185B", "reason": "Magenta — matches sectional chart solid magenta lines" },
+      "D": { "color": "#1976D2", "reason": "Blue dashed — lighter blue with dashed border to match dashed blue chart lines" },
+      "E": { "color": "#AD1457", "reason": "Faded magenta — matches magenta vignette shading on charts" },
+      "G": { "color": "#F5F5F5", "reason": "Near-white / no color — matches absence of depiction on charts" }
+    },
+    "line_style_on_buttons": {
+      "B": "solid border",
+      "C": "solid border",
+      "D": "dashed border",
+      "E": "gradient/faded border",
+      "A": "solid border (gray)",
+      "G": "dotted or no border"
+    }
+  }
+}

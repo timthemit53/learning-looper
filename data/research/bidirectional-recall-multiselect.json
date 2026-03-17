@@ -1,0 +1,52 @@
+{
+  "domain": "Bidirectional Recall & Multi-Select Question Formats",
+  "purpose": "Justify forward/backward question directions and select-all-that-apply format in later levels",
+  "last_verified": "2026-03-16",
+  "sources": [
+    {
+      "title": "Memory Asymmetry of Forward and Backward Associations in Recognition Tasks",
+      "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC3683557/",
+      "type": "peer-reviewed"
+    },
+    {
+      "title": "Forward and Backward Recall: Different Retrieval Processes",
+      "url": "https://research-information.bris.ac.uk/en/publications/forward-and-backward-recall-different-retrieval-processes/",
+      "type": "peer-reviewed"
+    },
+    {
+      "title": "Comparing Multiple-Answer vs Single-Answer MCQs (Taylor & Francis 2024)",
+      "url": "https://www.tandfonline.com/doi/full/10.1080/10528008.2024.2417106",
+      "type": "peer-reviewed"
+    },
+    {
+      "title": "Selecting Question Formats to Maximize the Testing Effect (Quizlet)",
+      "url": "https://quizlet.com/blog/selecting-question-formats-to-maximize-the-testing-effect",
+      "type": "industry"
+    },
+    {
+      "title": "Reinventing Flashcards to Increase Student Learning (SAGE)",
+      "url": "https://journals.sagepub.com/doi/10.1177/1475725717719771",
+      "type": "peer-reviewed"
+    },
+    {
+      "title": "Retrieval Practice (Cult of Pedagogy)",
+      "url": "https://www.cultofpedagogy.com/retrieval-practice/",
+      "type": "educational"
+    }
+  ],
+  "key_findings": {
+    "two_pathways": "Forward recall (class → attribute) uses inter-item associations. Backward recall (attribute → classes) uses visual-spatial/categorical representation. Different cognitive mechanisms — training both builds two independent memory pathways.",
+    "multiselect_discrimination": "Multiple-answer questions improved item discrimination from 0.23 to 0.29 vs single-answer MCQs (Taylor & Francis 2024).",
+    "hybrid_recommendation": "Use single-answer for baseline comprehension (early levels), MAQs to challenge broader application (later levels).",
+    "anki_model": "Anki creates both forward and reverse cards by default. One-direction-only flashcard use develops recall but not deeper understanding (82.9% of students only use one direction).",
+    "retrieval_practice": "The act of retrieving from memory strengthens connections. Especially effective for long-term retention, outperforms repeated studying and concept mapping."
+  },
+  "design_decisions": {
+    "level_progression": [
+      { "levels": "1-4", "direction": "forward", "format": "single_answer", "description": "Class → Attribute: 'What is Class B's cloud clearance?'" },
+      { "levels": "5-6", "direction": "backward", "format": "single_answer", "description": "Attribute → Class: 'Which class uniquely requires ATC clearance?' (unique attributes only)" },
+      { "levels": "7-8", "direction": "backward_multiselect", "format": "select_all", "description": "Attribute → Classes: 'Select ALL classes that require two-way radio' (shared attributes)" },
+      { "levels": "boss", "direction": "mixed", "format": "all_types", "description": "Random mix of forward, backward, and multi-select" }
+    ]
+  }
+}
