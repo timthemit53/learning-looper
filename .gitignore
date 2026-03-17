@@ -17,6 +17,10 @@ config.local.json
 .claude/projects/
 *.jsonl
 
+# Design docs (local only)
+CLAUDE.md
+docs/
+
 # Feedback log (personal data)
 data/feedback-log.json
 
