@@ -568,9 +568,12 @@
   <button class="next-btn" id="start-btn">Start Level 1</button>
 
   <div id="home-leaderboard" style="margin-top:20px; width:100%;"></div>
+  <div id="version-label" style="margin-top:12px; font-size:0.7rem; color:#555; text-align:center;"></div>
 </div>
 
 <script>
+const APP_VERSION = '1.1.0';
+
 // ============================================================
 // AIRSPACE DATA
 // ============================================================
@@ -1950,6 +1953,7 @@ $('logout-btn').onclick = logout;
 renderAvatarPicker();
 renderThemePicker();
 renderLeaderboard('home-leaderboard');
+$('version-label').textContent = `v${APP_VERSION}`;
 // Apply saved theme
 const savedPlayer = loadCurrentPlayer();
 if (savedPlayer && profiles[savedPlayer]?.theme) {
