@@ -1074,7 +1074,8 @@ let state = {
   levelWrong: 0,
   questionPool: [],
   currentQuestion: null,
-  locked: false
+  locked: false,
+  lastSavedScore: 0
 };
 
 const allQuestions = buildQuestions();
@@ -1458,9 +1459,12 @@ function levelComplete() {
   // Build mastery breakdown for active classes
   const masteryLines = lvl.classes.map(c => `Class ${c}: ${getMasteryPct(c)}%`).join('<br>');
 
+  const profile = profiles[state.playerName] || {};
+  const lifetimePts = profile.totalPoints || state.score;
   $('complete-stats').innerHTML =
     `Accuracy: ${accuracy}%<br>` +
     `Score: ${state.score}<br>` +
+    `Total Points: ${lifetimePts}<br>` +
     `Best Streak: ${state.bestStreak}<br><br>` +
     `<strong>Mastery by Class:</strong><br>${masteryLines}`;
 
@@ -1476,6 +1480,7 @@ function levelComplete() {
       state.bestStreak = 0;
       state.correct = 0;
       state.wrong = 0;
+      state.lastSavedScore = 0;
       $('score').textContent = '0';
       $('streak').textContent = '0';
       loadLevel(0);
@@ -1575,7 +1580,7 @@ function renderThemePicker() {
   const picker = $('theme-picker');
   if (!picker) return;
   const profile = profiles[loadCurrentPlayer()] || {};
-  const totalScore = profile.bestScore || 0;
+  const totalScore = profile.totalPoints || profile.bestScore || 0;
   const currentId = state.selectedTheme || profile.theme || 'pilot';
   picker.innerHTML = '';
 
@@ -1661,7 +1666,7 @@ function getUnlockedAccessories(totalScore) {
 
 function renderAvatarPicker() {
   const profile = profiles[loadCurrentPlayer()] || {};
-  const totalScore = profile.bestScore || 0;
+  const totalScore = profile.totalPoints || profile.bestScore || 0;
   state.avatarGender = state.avatarGender ?? profile.avatarGender ?? 'boy';
   state.avatarPreset = state.avatarPreset ?? profile.avatarPreset ?? 0;
   state.selectedAccessory = state.selectedAccessory ?? profile.accessory ?? 'none';
@@ -1737,8 +1742,11 @@ let profiles = loadProfiles();
 function updatePlayerProfile() {
   const name = state.playerName;
   if (!name) return;
-  const existing = profiles[name] || { bestScore: 0, bestStreak: 0, highestLevel: 0, gamesPlayed: 0, lastPlayed: null, faceColor: 0, accessory: 'none' };
+  const existing = profiles[name] || { bestScore: 0, totalPoints: 0, bestStreak: 0, highestLevel: 0, gamesPlayed: 0, lastPlayed: null, faceColor: 0, accessory: 'none' };
   existing.bestScore = Math.max(existing.bestScore, state.score);
+  const scoreDelta = state.score - (state.lastSavedScore || 0);
+  existing.totalPoints = (existing.totalPoints || 0) + scoreDelta;
+  state.lastSavedScore = state.score;
   existing.bestStreak = Math.max(existing.bestStreak, state.bestStreak);
   existing.highestLevel = Math.max(existing.highestLevel, LEVELS[state.currentLevel].level);
   existing.gamesPlayed = (existing.gamesPlayed || 0) + 1;
@@ -1746,9 +1754,9 @@ function updatePlayerProfile() {
   existing.avatarGender = state.avatarGender ?? existing.avatarGender ?? 'boy';
   existing.avatarPreset = state.avatarPreset ?? existing.avatarPreset ?? 0;
   existing.accessory = state.selectedAccessory ?? existing.accessory ?? 'none';
-  // Check for new unlocks
-  const newUnlocks = getUnlockedAccessories(existing.bestScore);
-  const prevUnlocks = getUnlockedAccessories(existing.bestScore - state.score);
+  // Check for new unlocks (compare against totalPoints before this session's delta)
+  const newUnlocks = getUnlockedAccessories(existing.totalPoints);
+  const prevUnlocks = getUnlockedAccessories(existing.totalPoints - scoreDelta);
   if (newUnlocks.length > prevUnlocks.length) {
     const newest = newUnlocks[newUnlocks.length - 1];
     existing.accessory = newest.id;
@@ -1762,7 +1770,7 @@ function updatePlayerProfile() {
 function renderLeaderboard(targetId) {
   const list = Object.entries(profiles)
     .map(([name, p]) => ({ name, ...p }))
-    .sort((a, b) => b.bestScore - a.bestScore);
+    .sort((a, b) => (b.totalPoints || b.bestScore || 0) - (a.totalPoints || a.bestScore || 0));
 
   const container = $(targetId || 'leaderboard-list');
   if (!container) return;
@@ -1783,8 +1791,8 @@ function renderLeaderboard(targetId) {
         <strong>${p.name}</strong>
       </div>
       <div style="text-align:right; font-size:0.85rem;">
-        <div style="color:var(--accent); font-weight:bold; font-size:1.1rem;">${p.bestScore}</div>
-        <div style="color:#888;">Level ${p.highestLevel} · Streak ${p.bestStreak}</div>
+        <div style="color:var(--accent); font-weight:bold; font-size:1.1rem;">${p.totalPoints || p.bestScore}</div>
+        <div style="color:#888;">Level ${p.highestLevel} · Best ${p.bestScore} · Streak ${p.bestStreak}</div>
       </div>
     </div>
   `).join('');
@@ -1838,6 +1846,7 @@ function logout() {
   state.bestStreak = 0;
   state.correct = 0;
   state.wrong = 0;
+  state.lastSavedScore = 0;
   state.playerName = '';
   $('score').textContent = '0';
   $('streak').textContent = '0';
@@ -1906,7 +1915,7 @@ $('start-btn').onclick = () => {
   saveCurrentPlayer(name);
   // Initialize profile if new
   if (!profiles[name]) {
-    profiles[name] = { bestScore: 0, bestStreak: 0, highestLevel: 0, gamesPlayed: 0, lastPlayed: null, avatarGender: state.avatarGender || 'boy', avatarPreset: state.avatarPreset || 0, accessory: state.selectedAccessory || 'none' };
+    profiles[name] = { bestScore: 0, totalPoints: 0, bestStreak: 0, highestLevel: 0, gamesPlayed: 0, lastPlayed: null, avatarGender: state.avatarGender || 'boy', avatarPreset: state.avatarPreset || 0, accessory: state.selectedAccessory || 'none' };
     saveProfiles();
   } else {
     profiles[name].avatarGender = state.avatarGender ?? profiles[name].avatarGender ?? 'boy';
