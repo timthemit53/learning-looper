@@ -278,7 +278,7 @@
   /* Start screen */
   .start-screen {
     text-align: center;
-    padding: 40px 20px 60px;
+    padding: 40px 20px;
     max-width: 500px;
   }
   .start-screen p { color: #888; margin-bottom: 20px; line-height: 1.6; }
@@ -572,7 +572,7 @@
 </div>
 
 <script>
-const APP_VERSION = '1.1.0';
+const APP_VERSION = '1.2.0';
 
 // ============================================================
 // AIRSPACE DATA
@@ -1100,7 +1100,8 @@ function startGame() {
   $('answers').style.display = 'grid';
   // Resume from highest completed level
   const profile = profiles[state.playerName];
-  const resumeLevel = profile?.highestLevel ? Math.min(profile.highestLevel, LEVELS.length - 1) : 0;
+  const subj = profile?.subjects?.airspace;
+  const resumeLevel = subj?.highestLevel ? Math.min(subj.highestLevel, LEVELS.length - 1) : 0;
   loadLevel(resumeLevel);
 }
 
@@ -1464,9 +1465,11 @@ function levelComplete() {
 
   const profile = profiles[state.playerName] || {};
   const lifetimePts = profile.totalPoints || state.score;
+  const subjPts = profile.subjects?.airspace?.totalPoints || state.score;
   $('complete-stats').innerHTML =
     `Accuracy: ${accuracy}%<br>` +
     `Score: ${state.score}<br>` +
+    `Airspace Points: ${subjPts}<br>` +
     `Total Points: ${lifetimePts}<br>` +
     `Best Streak: ${state.bestStreak}<br><br>` +
     `<strong>Mastery by Class:</strong><br>${masteryLines}`;
@@ -1583,7 +1586,7 @@ function renderThemePicker() {
   const picker = $('theme-picker');
   if (!picker) return;
   const profile = profiles[loadCurrentPlayer()] || {};
-  const totalScore = profile.totalPoints || profile.bestScore || 0;
+  const totalScore = profile.totalPoints || 0;
   const currentId = state.selectedTheme || profile.theme || 'pilot';
   picker.innerHTML = '';
 
@@ -1669,7 +1672,7 @@ function getUnlockedAccessories(totalScore) {
 
 function renderAvatarPicker() {
   const profile = profiles[loadCurrentPlayer()] || {};
-  const totalScore = profile.totalPoints || profile.bestScore || 0;
+  const totalScore = profile.totalPoints || 0;
   state.avatarGender = state.avatarGender ?? profile.avatarGender ?? 'boy';
   state.avatarPreset = state.avatarPreset ?? profile.avatarPreset ?? 0;
   state.selectedAccessory = state.selectedAccessory ?? profile.accessory ?? 'none';
@@ -1723,9 +1726,47 @@ const CURRENT_PLAYER_KEY = 'learning-looper-current-player';
 function loadProfiles() {
   try {
     const raw = localStorage.getItem(PROFILES_KEY);
-    if (raw) return JSON.parse(raw);
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      let migrated = false;
+      for (const name in parsed) {
+        if (!parsed[name] || typeof parsed[name] !== 'object') {
+          delete parsed[name];
+          migrated = true;
+          continue;
+        }
+        if (!parsed[name].subjects) {
+          parsed[name] = migrateProfile(parsed[name]);
+          migrated = true;
+        }
+      }
+      if (migrated) {
+        try { localStorage.setItem(PROFILES_KEY, JSON.stringify(parsed)); } catch (e) {}
+      }
+      return parsed;
+    }
   } catch (e) {}
   return {};
+}
+
+function migrateProfile(p) {
+  if (p.subjects) return p;
+  const airspace = {
+    bestScore: p.bestScore || 0,
+    totalPoints: p.totalPoints || p.bestScore || 0,
+    bestStreak: p.bestStreak || 0,
+    highestLevel: p.highestLevel || 0,
+    gamesPlayed: p.gamesPlayed || 0
+  };
+  return {
+    totalPoints: p.totalPoints || p.bestScore || 0,
+    avatarGender: p.avatarGender,
+    avatarPreset: p.avatarPreset,
+    accessory: p.accessory,
+    theme: p.theme,
+    lastPlayed: p.lastPlayed,
+    subjects: { airspace }
+  };
 }
 
 function saveProfiles() {
@@ -1745,19 +1786,33 @@ let profiles = loadProfiles();
 function updatePlayerProfile() {
   const name = state.playerName;
   if (!name) return;
-  const existing = profiles[name] || { bestScore: 0, totalPoints: 0, bestStreak: 0, highestLevel: 0, gamesPlayed: 0, lastPlayed: null, faceColor: 0, accessory: 'none' };
-  existing.bestScore = Math.max(existing.bestScore, state.score);
+  const existing = profiles[name] || {
+    totalPoints: 0, avatarGender: 'boy', avatarPreset: 0,
+    accessory: 'none', theme: 'pilot', lastPlayed: null,
+    subjects: {}
+  };
+  if (!existing.subjects) existing.subjects = {};
+  const subj = existing.subjects.airspace || {
+    bestScore: 0, totalPoints: 0, bestStreak: 0, highestLevel: 0, gamesPlayed: 0
+  };
+
+  subj.bestScore = Math.max(subj.bestScore, state.score);
   const scoreDelta = state.score - (state.lastSavedScore || 0);
-  existing.totalPoints = (existing.totalPoints || 0) + scoreDelta;
+  subj.totalPoints = (subj.totalPoints || 0) + scoreDelta;
   state.lastSavedScore = state.score;
-  existing.bestStreak = Math.max(existing.bestStreak, state.bestStreak);
-  existing.highestLevel = Math.max(existing.highestLevel, LEVELS[state.currentLevel].level);
-  existing.gamesPlayed = (existing.gamesPlayed || 0) + 1;
+  subj.bestStreak = Math.max(subj.bestStreak, state.bestStreak);
+  subj.highestLevel = Math.max(subj.highestLevel, LEVELS[state.currentLevel].level);
+  subj.gamesPlayed = (subj.gamesPlayed || 0) + 1;
+  existing.subjects.airspace = subj;
+
+  existing.totalPoints = Object.values(existing.subjects)
+    .reduce((sum, s) => sum + (s.totalPoints || 0), 0);
+
   existing.lastPlayed = new Date().toISOString();
   existing.avatarGender = state.avatarGender ?? existing.avatarGender ?? 'boy';
   existing.avatarPreset = state.avatarPreset ?? existing.avatarPreset ?? 0;
   existing.accessory = state.selectedAccessory ?? existing.accessory ?? 'none';
-  // Check for new unlocks (compare against totalPoints before this session's delta)
+
   const newUnlocks = getUnlockedAccessories(existing.totalPoints);
   const prevUnlocks = getUnlockedAccessories(existing.totalPoints - scoreDelta);
   if (newUnlocks.length > prevUnlocks.length) {
@@ -1773,7 +1828,7 @@ function updatePlayerProfile() {
 function renderLeaderboard(targetId) {
   const list = Object.entries(profiles)
     .map(([name, p]) => ({ name, ...p }))
-    .sort((a, b) => (b.totalPoints || b.bestScore || 0) - (a.totalPoints || a.bestScore || 0));
+    .sort((a, b) => (b.totalPoints || 0) - (a.totalPoints || 0));
 
   const container = $(targetId || 'leaderboard-list');
   if (!container) return;
@@ -1783,7 +1838,9 @@ function renderLeaderboard(targetId) {
   }
 
   const medals = ['🥇', '🥈', '🥉'];
-  container.innerHTML = list.map((p, i) => `
+  container.innerHTML = list.map((p, i) => {
+    const airspace = p.subjects?.airspace || {};
+    return `
     <div class="lb-entry" data-player="${p.name}" style="display:flex; align-items:center; justify-content:space-between;
                 padding:12px 16px; margin-bottom:8px; border-radius:10px; cursor:pointer;
                 background:${i === 0 ? '#1a2a1a' : 'var(--card)'}; border:1px solid ${i === 0 ? '#2a4a2a' : '#2a3450'}; transition: outline 0.2s;"
@@ -1794,11 +1851,11 @@ function renderLeaderboard(targetId) {
         <strong>${p.name}</strong>
       </div>
       <div style="text-align:right; font-size:0.85rem;">
-        <div style="color:var(--accent); font-weight:bold; font-size:1.1rem;">${p.totalPoints || p.bestScore}</div>
-        <div style="color:#888;">Level ${p.highestLevel} · Best ${p.bestScore} · Streak ${p.bestStreak}</div>
+        <div style="color:var(--accent); font-weight:bold; font-size:1.1rem;">${p.totalPoints || 0}</div>
+        <div style="color:#888;">Airspace Lv${airspace.highestLevel || 0} · Best ${airspace.bestScore || 0} · Streak ${airspace.bestStreak || 0}</div>
       </div>
     </div>
-  `).join('');
+  `}).join('');
 
   // Click a player to log in as them
   container.querySelectorAll('.lb-entry').forEach(el => {
@@ -1918,7 +1975,16 @@ $('start-btn').onclick = () => {
   saveCurrentPlayer(name);
   // Initialize profile if new
   if (!profiles[name]) {
-    profiles[name] = { bestScore: 0, totalPoints: 0, bestStreak: 0, highestLevel: 0, gamesPlayed: 0, lastPlayed: null, avatarGender: state.avatarGender || 'boy', avatarPreset: state.avatarPreset || 0, accessory: state.selectedAccessory || 'none' };
+    profiles[name] = {
+      totalPoints: 0, lastPlayed: null,
+      avatarGender: state.avatarGender || 'boy',
+      avatarPreset: state.avatarPreset || 0,
+      accessory: state.selectedAccessory || 'none',
+      theme: 'pilot',
+      subjects: {
+        airspace: { bestScore: 0, totalPoints: 0, bestStreak: 0, highestLevel: 0, gamesPlayed: 0 }
+      }
+    };
     saveProfiles();
   } else {
     profiles[name].avatarGender = state.avatarGender ?? profiles[name].avatarGender ?? 'boy';
@@ -1936,8 +2002,9 @@ $('start-btn').onclick = () => {
 function updateStartButton() {
   const name = $('player-name').value.trim();
   const profile = profiles[name];
-  if (profile && profile.highestLevel > 0) {
-    const lvl = Math.min(profile.highestLevel, LEVELS.length - 1);
+  const subj = profile?.subjects?.airspace;
+  if (subj && subj.highestLevel > 0) {
+    const lvl = Math.min(subj.highestLevel, LEVELS.length - 1);
     $('start-btn').textContent = `Continue Level ${LEVELS[lvl].level}`;
   } else {
     $('start-btn').textContent = 'Start Level 1';
