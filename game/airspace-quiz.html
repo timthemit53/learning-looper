@@ -1585,7 +1585,7 @@ function getUnlockedThemes(totalScore) {
 function renderThemePicker() {
   const picker = $('theme-picker');
   if (!picker) return;
-  const profile = profiles[loadCurrentPlayer()] || {};
+  const profile = profiles[$('player-name').value.trim() || loadCurrentPlayer()] || {};
   const totalScore = profile.totalPoints || 0;
   const currentId = state.selectedTheme || profile.theme || 'pilot';
   picker.innerHTML = '';
@@ -1671,7 +1671,7 @@ function getUnlockedAccessories(totalScore) {
 }
 
 function renderAvatarPicker() {
-  const profile = profiles[loadCurrentPlayer()] || {};
+  const profile = profiles[$('player-name').value.trim() || loadCurrentPlayer()] || {};
   const totalScore = profile.totalPoints || 0;
   state.avatarGender = state.avatarGender ?? profile.avatarGender ?? 'boy';
   state.avatarPreset = state.avatarPreset ?? profile.avatarPreset ?? 0;
