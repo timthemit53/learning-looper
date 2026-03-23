@@ -1,0 +1,474 @@
+{
+  "metadata": {
+    "version": "1.0",
+    "aircraft": "Cessna 172S NAV III (G1000)",
+    "engine": "Lycoming IO-360-L2A (Fuel Injected)",
+    "note": "Bold-face memory items from 172S Skyhawk SP POH Section 3. VERIFY AGAINST YOUR SPECIFIC AIRCRAFT POH.",
+    "sources": {
+      "poh": {
+        "label": "Cessna 172S Skyhawk SP POH, Section 3",
+        "note": "Copyright Textron Aviation. Steps transcribed from published training references."
+      },
+      "thrust_flight": {
+        "label": "Thrust Flight — Cessna 172 Emergency Checklist (2018+ models)",
+        "url": "https://www.thrustflight.com/cessna-172-emergency-checklist/"
+      },
+      "quizlet_boldface": {
+        "label": "Quizlet — 172S NAV 3 G1000 Bold Faces Only",
+        "url": "https://quizlet.com/532359738/cessna-172s-nav-3-g1000-emergency-procedures-bold-faces-only-flash-cards/"
+      },
+      "faa_afh": {
+        "label": "FAA Airplane Flying Handbook, Chapter 18 — Emergency Procedures",
+        "url": "https://www.faa.gov/sites/faa.gov/files/regulations_policies/handbooks_manuals/aviation/airplane_handbook/19_afh_ch18.pdf"
+      }
+    }
+  },
+  "procedures": [
+    {
+      "id": "engine_failure_takeoff_roll",
+      "name": "Engine Failure During Takeoff Roll",
+      "trigger": "Engine loses power while still on the runway during takeoff",
+      "phase": "takeoff_roll",
+      "source": "thrust_flight",
+      "why_summary": "Stop the airplane as quickly as possible, then systematically shut down to prevent fire.",
+      "common_mistakes": [
+        "Hesitation or denial — keep accelerating hoping engine recovers",
+        "Not braking aggressively enough",
+        "Forgetting to retract flaps if set for short-field takeoff"
+      ],
+      "steps": [
+        {
+          "order": 1,
+          "action": "Throttle",
+          "target": "IDLE",
+          "is_memory_item": true,
+          "why": "Stop accelerating immediately — every foot of runway you use narrows your options."
+        },
+        {
+          "order": 2,
+          "action": "Brakes",
+          "target": "APPLY",
+          "is_memory_item": true,
+          "why": "Maximum braking to stop in shortest distance. Use remaining runway."
+        },
+        {
+          "order": 3,
+          "action": "Wing Flaps",
+          "target": "RETRACT",
+          "is_memory_item": true,
+          "why": "Prevents flaps from catching ground obstacles and plants the airplane firmly on the runway."
+        },
+        {
+          "order": 4,
+          "action": "Mixture",
+          "target": "IDLE CUTOFF",
+          "is_memory_item": true,
+          "why": "Cuts fuel to the engine — prevents fire risk after stopping."
+        },
+        {
+          "order": 5,
+          "action": "Magnetos Switch",
+          "target": "OFF",
+          "is_memory_item": true,
+          "why": "Eliminates ignition source."
+        },
+        {
+          "order": 6,
+          "action": "STBY BATT Switch",
+          "target": "OFF",
+          "is_memory_item": true,
+          "why": "De-energizes the standby battery (172S G1000 specific)."
+        },
+        {
+          "order": 7,
+          "action": "Master Switch (ALT & BAT)",
+          "target": "OFF",
+          "is_memory_item": true,
+          "why": "Removes all electrical power — eliminates spark risk."
+        }
+      ]
+    },
+    {
+      "id": "engine_failure_after_takeoff",
+      "name": "Engine Failure Immediately After Takeoff",
+      "trigger": "Engine loses power after liftoff, below 1,000 ft AGL",
+      "phase": "after_takeoff",
+      "source": "quizlet_boldface",
+      "why_summary": "Pitch for safe airspeed FIRST (prevent stall/spin), shut down fuel and electrical to prevent post-crash fire, land straight ahead.",
+      "common_mistakes": [
+        "The 'impossible turn' — attempting to turn back to runway below 1,000 ft AGL. Almost always fatal.",
+        "Failure to pitch down immediately — startle response is to pull back, causing stall within seconds",
+        "3-5 second recognition delay — 'total disbelief' freeze before acting",
+        "Forgetting to unlatch cabin door before touchdown",
+        "Fixating on shutdown steps instead of flying the airplane"
+      ],
+      "steps": [
+        {
+          "order": 1,
+          "action": "Airspeed",
+          "target": "70 KIAS (flaps up) / 65 KIAS (flaps down)",
+          "is_memory_item": true,
+          "why": "MOST IMPORTANT STEP. Prevents stall/spin — the #1 killer in this scenario. Override the instinct to pull back."
+        },
+        {
+          "order": 2,
+          "action": "Mixture",
+          "target": "CUTOFF",
+          "is_memory_item": true,
+          "why": "Cuts fuel to prevent post-crash fire. A crash is survivable; a crash with fire often is not."
+        },
+        {
+          "order": 3,
+          "action": "Fuel Shutoff Valve",
+          "target": "OFF",
+          "is_memory_item": true,
+          "why": "Backs up the mixture cutoff — ensures no fuel reaches the engine area on impact."
+        },
+        {
+          "order": 4,
+          "action": "Magnetos Switch",
+          "target": "OFF",
+          "is_memory_item": true,
+          "why": "Eliminates ignition source on impact."
+        },
+        {
+          "order": 5,
+          "action": "Flaps",
+          "target": "AS REQUIRED",
+          "is_memory_item": true,
+          "why": "Adjust glide path to your chosen landing area."
+        },
+        {
+          "order": 6,
+          "action": "STBY BATT Switch",
+          "target": "OFF",
+          "is_memory_item": true,
+          "why": "De-energizes standby battery."
+        },
+        {
+          "order": 7,
+          "action": "Master Switch (ALT & BAT)",
+          "target": "OFF",
+          "is_memory_item": true,
+          "why": "Removes all electrical power — prevents sparks on impact."
+        },
+        {
+          "order": 8,
+          "action": "Cabin Door",
+          "target": "UNLATCH",
+          "is_memory_item": true,
+          "why": "Prevents door from jamming shut if airframe deforms on impact — critical for egress."
+        },
+        {
+          "order": 9,
+          "action": "Land",
+          "target": "STRAIGHT AHEAD",
+          "is_memory_item": true,
+          "why": "Do NOT attempt to turn back to the runway. There is not enough altitude to complete the turn safely."
+        }
+      ]
+    },
+    {
+      "id": "engine_failure_in_flight",
+      "name": "Engine Failure During Flight",
+      "trigger": "Loss of engine power or RPM drop at cruise altitude",
+      "phase": "cruise",
+      "source": "quizlet_boldface",
+      "why_summary": "Establish best glide (maximize time aloft), then troubleshoot fuel system (the #1 cause of engine failure). If no restart, execute emergency landing.",
+      "common_mistakes": [
+        "Not trimming for best glide — hold pressure, get distracted, airspeed wanders",
+        "Tunnel vision on restart without scanning for landing sites",
+        "Confusion about flooded restart procedure"
+      ],
+      "steps": [
+        {
+          "order": 1,
+          "action": "Airspeed",
+          "target": "68 KIAS (Best Glide)",
+          "is_memory_item": true,
+          "why": "Maximizes glide distance and time aloft. Trim for this speed so you can focus on troubleshooting."
+        },
+        {
+          "order": 2,
+          "action": "Fuel Shutoff Valve",
+          "target": "ON (Push In)",
+          "is_memory_item": true,
+          "why": "Ensures fuel valve is open — it may have been bumped to the off position."
+        },
+        {
+          "order": 3,
+          "action": "Fuel Selector Valve",
+          "target": "BOTH",
+          "is_memory_item": true,
+          "why": "Ensures both fuel tanks are feeding the engine — one tank may be empty."
+        },
+        {
+          "order": 4,
+          "action": "Fuel Pump Switch",
+          "target": "ON",
+          "is_memory_item": true,
+          "why": "Activates the electric backup fuel pump in case the engine-driven pump failed."
+        },
+        {
+          "order": 5,
+          "action": "Mixture",
+          "target": "RICH",
+          "is_memory_item": true,
+          "why": "Ensures full fuel flow — mixture may have been accidentally leaned too far."
+        },
+        {
+          "order": 6,
+          "action": "Magnetos Switch",
+          "target": "BOTH (or START if prop stopped)",
+          "is_memory_item": true,
+          "why": "Ensures both ignition circuits are active. If propeller has stopped windmilling, START engages the starter motor."
+        }
+      ],
+      "branches": {
+        "power_restored": {
+          "label": "If Power Restored",
+          "steps": [
+            {"order": 1, "action": "Fuel Pump", "target": "OFF (Monitor Flow)", "is_memory_item": false},
+            {"order": 2, "action": "Cruise Checklist", "target": "COMPLETE", "is_memory_item": false}
+          ]
+        },
+        "power_not_restored": {
+          "label": "If Power NOT Restored",
+          "steps": [
+            {"order": 1, "action": "Emergency Landing", "target": "EXECUTE", "is_memory_item": false}
+          ]
+        }
+      }
+    },
+    {
+      "id": "engine_fire_in_flight",
+      "name": "Engine Fire In Flight",
+      "trigger": "Smoke or flames from engine compartment, burning smell, rising engine temperature",
+      "phase": "cruise",
+      "source": "thrust_flight",
+      "why_summary": "Cut ALL fuel to the engine immediately (starve the fire), then shut down electrical, close cabin heat (it pipes engine-area air into cabin), increase airspeed to blow out flames, and execute emergency landing.",
+      "common_mistakes": [
+        "Hesitating on fuel cutoff — assessing instead of acting immediately",
+        "Forgetting cabin heat/air — this pipes fire products into the cockpit",
+        "Not increasing airspeed — counterintuitive but blows out the flames",
+        "Attempting to restart engine after fire appears out — structural damage may exist"
+      ],
+      "steps": [
+        {
+          "order": 1,
+          "action": "Mixture",
+          "target": "CUTOFF",
+          "is_memory_item": true,
+          "why": "Immediately cuts fuel flow to the engine — starves the fire of its fuel source."
+        },
+        {
+          "order": 2,
+          "action": "Fuel Shutoff Valve",
+          "target": "OFF",
+          "is_memory_item": true,
+          "why": "Backs up the mixture cutoff — ensures no fuel reaches the engine compartment."
+        },
+        {
+          "order": 3,
+          "action": "Fuel Pump Switch",
+          "target": "OFF",
+          "is_memory_item": true,
+          "why": "Stops the electric pump from pushing fuel toward the fire."
+        },
+        {
+          "order": 4,
+          "action": "Master Switch (ALT & BAT)",
+          "target": "OFF",
+          "is_memory_item": true,
+          "why": "Eliminates all electrical power — removes potential ignition sources."
+        },
+        {
+          "order": 5,
+          "action": "Cabin Vents",
+          "target": "OPEN",
+          "is_memory_item": false,
+          "why": "Allows smoke to vent from the cabin."
+        },
+        {
+          "order": 6,
+          "action": "Cabin Heat/Air",
+          "target": "OFF",
+          "is_memory_item": false,
+          "why": "The cabin heat system routes air over the exhaust manifold into the cabin. With an engine fire, this is literally piping fire products into the cockpit."
+        },
+        {
+          "order": 7,
+          "action": "Airspeed",
+          "target": "Pitch for Vno",
+          "is_memory_item": false,
+          "why": "COUNTERINTUITIVE: Increasing airspeed forces more airflow through the engine cowling, which can blow out the flames. You're descending faster but fire extinguishment is the priority."
+        }
+      ],
+      "branches": {
+        "fire_extinguished": {
+          "label": "After Fire Extinguished",
+          "steps": [
+            {"order": 1, "action": "Emergency Landing", "target": "EXECUTE", "is_memory_item": false, "why": "Even if fire appears out, structural damage may have occurred. Land at nearest suitable location."}
+          ]
+        }
+      }
+    },
+    {
+      "id": "electrical_fire_in_flight",
+      "name": "Electrical Fire In Flight",
+      "trigger": "Burning smell, smoke in cabin, acrid odor from behind instrument panel",
+      "phase": "cruise",
+      "source": "quizlet_boldface",
+      "why_summary": "Kill all electrical power (including standby battery), starve fire of oxygen by closing vents, extinguish, then cautiously restore power one circuit at a time. The engine keeps running — magnetos are self-powered.",
+      "common_mistakes": [
+        "Resetting popped circuit breakers — the popped breaker IS the fire protection doing its job",
+        "Opening vents too early — feeds oxygen to the fire before it's out",
+        "Restoring all power at once instead of one system at a time",
+        "Forgetting STBY BATT switch — 172S specific, older models don't have it",
+        "Panicking about losing instruments — engine still runs on magnetos, you can fly and land without electrical power"
+      ],
+      "steps": [
+        {
+          "order": 1,
+          "action": "STBY BATT Switch",
+          "target": "OFF",
+          "is_memory_item": true,
+          "why": "The standby battery is a SEPARATE power source that can fuel an electrical fire even with the master off. Kill it first."
+        },
+        {
+          "order": 2,
+          "action": "Master Switch (ALT & BAT)",
+          "target": "OFF",
+          "is_memory_item": true,
+          "why": "De-energizes the main battery and alternator — removes the electrical energy feeding the fire."
+        },
+        {
+          "order": 3,
+          "action": "Cabin Vents",
+          "target": "CLOSED",
+          "is_memory_item": true,
+          "why": "Starves fire of oxygen. The wiring lives behind the instrument panel — cabin airflow feeds directly into that space."
+        },
+        {
+          "order": 4,
+          "action": "Cabin Heat/Air",
+          "target": "OFF",
+          "is_memory_item": true,
+          "why": "Eliminates additional airflow that could feed the fire."
+        },
+        {
+          "order": 5,
+          "action": "Fire Extinguisher",
+          "target": "ACTIVATE",
+          "is_memory_item": true,
+          "why": "Use AFTER removing electrical power — otherwise the fire reignites. Direct at the base of visible flames/smoke."
+        },
+        {
+          "order": 6,
+          "action": "All Switches (except Magnetos)",
+          "target": "OFF",
+          "is_memory_item": false,
+          "why": "Ensures every circuit is isolated before any power restoration attempt."
+        }
+      ],
+      "branches": {
+        "fire_continues": {
+          "label": "If Fire Continues",
+          "steps": [
+            {"order": 1, "action": "Emergency Descent", "target": "EXECUTE", "is_memory_item": false},
+            {"order": 2, "action": "Land", "target": "ASAP", "is_memory_item": false}
+          ]
+        },
+        "fire_out": {
+          "label": "After Fire Extinguished",
+          "steps": [
+            {"order": 1, "action": "Cabin Vents", "target": "OPEN", "is_memory_item": false, "why": "Clear smoke and toxic fumes from cabin. ONLY after fire is confirmed out."},
+            {"order": 2, "action": "Cabin Heat/Air", "target": "ON", "is_memory_item": false, "why": "Restore airflow to clear remaining smoke."}
+          ]
+        },
+        "restore_power": {
+          "label": "If Power Needed for Continued Flight",
+          "steps": [
+            {"order": 1, "action": "Circuit Breakers", "target": "CHECK (DO NOT RESET popped breakers)", "is_memory_item": false, "why": "A popped breaker indicates the faulty circuit. Resetting it re-energizes the fault."},
+            {"order": 2, "action": "Master Switch (ALT & BAT)", "target": "ON", "is_memory_item": false},
+            {"order": 3, "action": "STBY BATT Switch", "target": "ARM", "is_memory_item": false},
+            {"order": 4, "action": "Avionics BUS 1 & 2", "target": "ON", "is_memory_item": false},
+            {"order": 5, "action": "Individual Switches", "target": "ON one at a time, with delay", "is_memory_item": false, "why": "Incremental restoration lets you identify which circuit caused the fire if it recurs."}
+          ]
+        }
+      }
+    },
+    {
+      "id": "spin_recovery",
+      "name": "Spin Recovery (PARE)",
+      "trigger": "Aircraft enters a spin — nose pointed down, rotating around vertical axis, airspeed low and steady",
+      "phase": "any",
+      "source": "faa_afh",
+      "why_summary": "Remove pro-spin forces (power, aileron), then stop the rotation (opposite rudder), then break the stall (elevator forward). Order is critical — each step enables the next.",
+      "common_mistakes": [
+        "Applying aileron input — MOST COMMON ERROR. On a stalled wing, aileron worsens the spin.",
+        "Insufficient forward elevator — afraid to push nose down when already pointed at ground",
+        "Waiting between rudder and elevator — should be quick sequence R then E",
+        "Holding opposite rudder too long after rotation stops — risks spin in other direction",
+        "Excessive back-elevator during pullout — causes secondary stall, potentially re-entering spin",
+        "Slow, cautious control inputs — spin recovery requires brisk, decisive movements",
+        "Misidentifying spin direction — look outside, not at instruments"
+      ],
+      "steps": [
+        {
+          "order": 1,
+          "action": "Power",
+          "target": "IDLE",
+          "is_memory_item": true,
+          "mnemonic": "P",
+          "why": "Running engine produces gyroscopic precession and P-factor that sustain or worsen the spin. Removing power eliminates these pro-spin forces."
+        },
+        {
+          "order": 2,
+          "action": "Ailerons",
+          "target": "NEUTRAL",
+          "is_memory_item": true,
+          "mnemonic": "A",
+          "why": "COUNTERINTUITIVE: Instinct says 'roll wings level.' But wings are stalled — aileron input on a stalled wing increases angle of attack on the already-more-stalled wing, deepening the spin."
+        },
+        {
+          "order": 3,
+          "action": "Rudder",
+          "target": "FULL OPPOSITE to spin direction",
+          "is_memory_item": true,
+          "mnemonic": "R",
+          "why": "The spin is a yaw-dominated rotation. Full opposite rudder directly opposes the yaw, disrupting the aerodynamic equilibrium sustaining the spin."
+        },
+        {
+          "order": 4,
+          "action": "Elevator",
+          "target": "BRISKLY FULL FORWARD",
+          "is_memory_item": true,
+          "mnemonic": "E",
+          "why": "THIS is what breaks the stall. Pushing forward reduces angle of attack below critical angle, unstalling both wings. Rudder stops rotation; elevator stops the stall."
+        },
+        {
+          "order": 5,
+          "action": "Rudder",
+          "target": "NEUTRALIZE (after rotation stops)",
+          "is_memory_item": true,
+          "why": "Holding opposite rudder after spin stops risks entering a spin in the opposite direction."
+        },
+        {
+          "order": 6,
+          "action": "Elevator",
+          "target": "SMOOTHLY BACK to level flight",
+          "is_memory_item": true,
+          "why": "Aggressive back-pressure can exceed critical angle of attack again — causing secondary stall and potentially a new spin."
+        },
+        {
+          "order": 7,
+          "action": "Power",
+          "target": "GRADUALLY ADD",
+          "is_memory_item": true,
+          "why": "Return to cruise power smoothly after stable flight is established."
+        }
+      ]
+    }
+  ]
+}
